@@ -1,0 +1,28 @@
+.circle {
+  position: relative;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-accent);
+}
+
+.circle.done {
+  border: none;
+  background: var(--color-add);
+  color: white;
+}
+
+.circle:disabled {
+  cursor: default;
+}
+
+.check {
+  position: absolute;
+  inset: 3px;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+}

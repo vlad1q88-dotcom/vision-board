@@ -1,0 +1,81 @@
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.importButton {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.addButton {
+  position: relative;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-add);
+  color: white;
+}
+
+.addButton::before,
+.addButton::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: currentColor;
+  border-radius: 1px;
+}
+
+.addButton::before {
+  width: 16px;
+  height: 2.4px;
+  transform: translate(-50%, -50%);
+}
+
+.addButton::after {
+  width: 2.4px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.empty {
+  color: var(--color-text-muted);
+}

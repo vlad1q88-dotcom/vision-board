@@ -1,0 +1,141 @@
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+.titleButton {
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-align: left;
+  padding: 0;
+  flex: 1;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.date {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  padding: 0;
+}
+
+.deleteButton {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8rem;
+}
+
+.dateForm {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.dateInput {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8rem;
+  font-family: inherit;
+}
+
+.dateSave {
+  background: var(--color-accent-strong);
+  border: none;
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8rem;
+}
+
+.dateCancel {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8rem;
+}
+
+.storyButton {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  padding: var(--space-2) 0 0;
+}
+
+.storyForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.storyTextarea {
+  width: 100%;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.storyActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+}
+
+.cancel {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+}
+
+.save {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.save:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}

@@ -34,6 +34,12 @@
   padding: var(--space-2) var(--space-3);
   font-size: 0.85rem;
   white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.importButton:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .addButton {
@@ -68,6 +74,51 @@
   width: 2.4px;
   height: 16px;
   transform: translate(-50%, -50%);
+}
+
+.selectionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+
+.selectionCount {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.selectionActions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.selectionCancel,
+.selectionAction {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.selectionCancel:hover,
+.selectionAction:hover:not(:disabled) {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.selectionAction:disabled {
+  color: var(--color-text-muted);
+  cursor: not-allowed;
 }
 
 .list {

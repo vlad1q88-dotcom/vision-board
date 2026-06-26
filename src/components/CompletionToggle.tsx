@@ -30,7 +30,7 @@ export function CompletionToggle({ onComplete }: CompletionToggleProps) {
         aria-label="Отметить цель выполненной"
       >
         <AnimatePresence>{isCelebrating && <ConfettiBurst key="confetti" />}</AnimatePresence>
-        {isCelebrating && (
+        {isCelebrating ? (
           <motion.svg
             className={styles.check}
             viewBox="0 0 24 24"
@@ -47,6 +47,19 @@ export function CompletionToggle({ onComplete }: CompletionToggleProps) {
               strokeLinejoin="round"
             />
           </motion.svg>
+        ) : (
+          <span className={styles.previewDone} aria-hidden="true">
+            <svg className={styles.check} viewBox="0 0 24 24">
+              <path
+                d="M5 12.5l4.5 4.5L19 7"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
         )}
       </button>
       {isConfirming && (

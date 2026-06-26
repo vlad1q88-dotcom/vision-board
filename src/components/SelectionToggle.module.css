@@ -1,0 +1,29 @@
+.circle {
+  position: relative;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  background: transparent;
+  color: var(--color-add);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.circle:hover {
+  border-color: var(--color-add);
+}
+
+.circle.selected {
+  border: none;
+  background: var(--color-add);
+  color: white;
+}
+
+.check {
+  position: absolute;
+  inset: 3px;
+  width: calc(100% - 6px);
+  height: calc(100% - 6px);
+}

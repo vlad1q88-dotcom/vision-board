@@ -10,6 +10,12 @@
   border-radius: var(--radius-sm);
   background: transparent;
   color: var(--color-text-muted);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.toggle:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
 .icon {

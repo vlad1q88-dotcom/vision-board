@@ -4,16 +4,28 @@ import { useGoalImages } from '../hooks/useGoalImages'
 import { ThumbnailStrip } from './ThumbnailStrip'
 import { ConfirmDialog } from './ConfirmDialog'
 import { CompletionToggle } from './CompletionToggle'
+import { SelectionToggle } from './SelectionToggle'
 import { GoalForm } from './GoalForm'
 import type { Goal } from '../types'
 import styles from './GoalCard.module.css'
 
 interface GoalCardProps {
   goal: Goal
+  categories: string[]
   forceExpand: boolean
+  isSelecting: boolean
+  isSelected: boolean
+  onToggleSelect: (id: number) => void
 }
 
-export function GoalCard({ goal, forceExpand }: GoalCardProps) {
+export function GoalCard({
+  goal,
+  categories,
+  forceExpand,
+  isSelecting,
+  isSelected,
+  onToggleSelect,
+}: GoalCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [editing, setEditing] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
@@ -33,10 +45,12 @@ export function GoalCard({ goal, forceExpand }: GoalCardProps) {
         <GoalForm
           initialTitle={goal.title}
           initialDescription={goal.description}
+          initialCategory={goal.category}
+          categories={categories}
           submitLabel="Сохранить"
           onCancel={() => setEditing(false)}
-          onSubmit={async (title, description) => {
-            await updateGoal(goal.id, title, description)
+          onSubmit={async (title, description, category) => {
+            await updateGoal(goal.id, title, description, category)
             setEditing(false)
           }}
         />
@@ -47,7 +61,11 @@ export function GoalCard({ goal, forceExpand }: GoalCardProps) {
   return (
     <div className={styles.card} ref={cardRef} id={`goal-${goal.id}`}>
       <div className={styles.header}>
-        <CompletionToggle onComplete={() => completeGoal(goal.id)} />
+        {isSelecting ? (
+          <SelectionToggle isSelected={isSelected} onToggle={() => onToggleSelect(goal.id)} />
+        ) : (
+          <CompletionToggle onComplete={() => completeGoal(goal.id)} />
+        )}
         <button
           type="button"
           className={styles.titleButton}
@@ -55,6 +73,7 @@ export function GoalCard({ goal, forceExpand }: GoalCardProps) {
         >
           {goal.title}
         </button>
+        <span className={styles.category}>{goal.category}</span>
         <div className={styles.headerActions}>
           <button type="button" className={styles.iconButton} onClick={() => setEditing(true)}>
             Изм.

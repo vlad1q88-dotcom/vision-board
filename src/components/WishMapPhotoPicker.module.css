@@ -1,0 +1,145 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: var(--color-bg);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.close {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.75rem;
+  line-height: 1;
+  padding: 0 var(--space-2);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  max-width: 960px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.previewBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 320;
+}
+
+.previewContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+}
+
+.previewImage {
+  max-width: 90vw;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  display: block;
+}
+
+.previewClose {
+  position: absolute;
+  top: -2.5rem;
+  right: 0;
+  background: transparent;
+  border: none;
+  color: #f3f0ff;
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.previewPrev,
+.previewNext {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #f3f0ff;
+  font-size: 2rem;
+  line-height: 1;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.previewPrev {
+  left: var(--space-4);
+}
+
+.previewNext {
+  right: var(--space-4);
+}
+
+.arrowIcon {
+  width: 22px;
+  height: 22px;
+}
+
+.chooseButton {
+  position: absolute;
+  bottom: var(--space-4);
+  right: var(--space-4);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.chooseButton:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.previewCaption {
+  position: absolute;
+  top: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 1.1rem;
+  font-weight: 600;
+  max-width: 70%;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

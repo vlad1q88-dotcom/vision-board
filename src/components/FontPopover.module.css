@@ -1,0 +1,64 @@
+.popover {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  left: 0;
+  z-index: 350;
+  min-width: 200px;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.optionList {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.option,
+.optionActive {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.option {
+  background: transparent;
+  color: var(--color-text);
+}
+
+.option:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.optionActive {
+  background: var(--color-add);
+  color: white;
+}
+
+.opacityRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-1);
+}
+
+.opacityLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.opacitySlider {
+  accent-color: var(--color-text);
+  transition: opacity 0.15s ease;
+}

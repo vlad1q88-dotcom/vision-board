@@ -1,17 +1,27 @@
 // Must never render <audio>/<video> or use the Web Audio API / navigator.mediaSession here:
 // any of those would let the browser treat this page as a media session and pause the
 // user's background music. Keep this page strictly visual.
-import { useCallback, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AnimatePresence } from 'motion/react'
 import { useAllImages } from '../hooks/useAllImages'
+import { ALL_CATEGORIES } from '../db/categories'
 import { useSlideshowSequence } from '../slideshow/useSlideshowSequence'
 import { computeIntervalMs } from '../slideshow/intervalFormula'
 import { SlideshowImage } from '../slideshow/SlideshowImage'
 import styles from './SlideshowPage.module.css'
 
 export function SlideshowPage() {
-  const images = useAllImages()
+  const allImages = useAllImages()
+  const [searchParams] = useSearchParams()
+  const category = searchParams.get('category')
+  const images = useMemo(
+    () =>
+      category && category !== ALL_CATEGORIES
+        ? allImages.filter((image) => image.goalCategory === category)
+        : allImages,
+    [allImages, category],
+  )
   const navigate = useNavigate()
   const exit = useCallback(() => navigate('/gallery', { replace: true }), [navigate])
   const count = images.length

@@ -22,13 +22,15 @@ export function ImportGoalsDialog({ onClose }: ImportGoalsDialogProps) {
       <div className={styles.dialog} onClick={(event) => event.stopPropagation()}>
         <h3 className={styles.title}>Импорт целей из текста</h3>
         <p className={styles.hint}>
-          Вставь список — одна цель на строке. Маркеры списка (-, *, 1.) необязательны.
-          Описание можно указать через «—», «-» или «:».
+          Одна цель на строке. Маркеры списка (-, *, 1.) необязательны. Описание необходимо указать
+          через «:». Категорию — в конце строки в скобках.
         </p>
         <textarea
           className={styles.textarea}
           rows={8}
-          placeholder={'- Путешествие в Японию — увидеть сакуру весной\n- Выучить испанский'}
+          placeholder={
+            '- Путешествие в Японию: увидеть сакуру весной (Путешествия)\n- Выучить испанский'
+          }
           value={text}
           onChange={(event) => setText(event.target.value)}
           autoFocus

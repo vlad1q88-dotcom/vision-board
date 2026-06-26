@@ -8,6 +8,11 @@
   border: 2px solid var(--color-border);
   background: transparent;
   color: var(--color-accent);
+  transition: border-color 0.15s ease;
+}
+
+.circle:hover:not(:disabled) {
+  border-color: var(--color-add);
 }
 
 .circle.done {
@@ -25,4 +30,18 @@
   inset: 3px;
   width: calc(100% - 6px);
   height: calc(100% - 6px);
+}
+
+.previewDone {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--color-add);
+  color: white;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.circle:hover:not(:disabled) .previewDone {
+  opacity: 0.4;
 }

@@ -79,6 +79,7 @@ export function JournalPage() {
       {completedGoals.length === 0 && (
         <p className={styles.empty}>
           Пока нет завершённых целей. Отметь цель выполненной на вкладке «Цели» — она появится здесь.
+          Или нажми + и напиши за что ты сегодня благодарен.
         </p>
       )}
     </div>

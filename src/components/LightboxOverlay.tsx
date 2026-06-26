@@ -56,7 +56,16 @@ export function LightboxOverlay({ images }: LightboxOverlayProps) {
             onClick={() => goToOffset(-1)}
             aria-label="Предыдущее фото"
           >
-            ‹
+            <svg viewBox="0 0 24 24" className={styles.arrowIcon}>
+              <path
+                d="M15 6l-6 6 6 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         )}
         {url && <img src={url} alt="" className={styles.image} />}
@@ -67,7 +76,16 @@ export function LightboxOverlay({ images }: LightboxOverlayProps) {
             onClick={() => goToOffset(1)}
             aria-label="Следующее фото"
           >
-            ›
+            <svg viewBox="0 0 24 24" className={styles.arrowIcon}>
+              <path
+                d="M9 6l6 6-6 6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
           </button>
         )}
         <button

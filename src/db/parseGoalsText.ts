@@ -1,23 +1,32 @@
 export interface ParsedGoal {
   title: string
   description: string
+  category?: string
 }
 
 const LIST_MARKER = /^\s*(?:[-*•]|\d+[.)])\s+/
-const SEPARATORS = [' — ', ' – ', ' - ', ': ']
+const DESCRIPTION_SEPARATOR = ': '
+const TRAILING_CATEGORY = /\s*\(([^()]+)\)\s*$/
 
 function stripMarkdownEmphasis(text: string): string {
   return text.replace(/\*\*(.+?)\*\*/g, '$1').replace(/__(.+?)__/g, '$1')
 }
 
-function splitTitleAndDescription(line: string): ParsedGoal {
-  for (const separator of SEPARATORS) {
-    const index = line.indexOf(separator)
-    if (index > 0) {
-      return {
-        title: line.slice(0, index).trim(),
-        description: line.slice(index + separator.length).trim(),
-      }
+// A category in parentheses at the end of the line, e.g. "Цель: описание (Здоровье)".
+function extractTrailingCategory(line: string): { line: string; category?: string } {
+  const match = line.match(TRAILING_CATEGORY)
+  if (!match) return { line }
+  const category = match[1].trim()
+  if (!category) return { line }
+  return { line: line.slice(0, match.index).trim(), category }
+}
+
+function splitTitleAndDescription(line: string): Omit<ParsedGoal, 'category'> {
+  const index = line.indexOf(DESCRIPTION_SEPARATOR)
+  if (index > 0) {
+    return {
+      title: line.slice(0, index).trim(),
+      description: line.slice(index + DESCRIPTION_SEPARATOR.length).trim(),
     }
   }
   return { title: line.trim(), description: '' }
@@ -30,6 +39,9 @@ export function parseGoalsText(text: string): ParsedGoal[] {
     .split('\n')
     .map((line) => stripMarkdownEmphasis(line.replace(LIST_MARKER, '')).trim())
     .filter((line) => line.length > 0)
-    .map(splitTitleAndDescription)
+    .map((line) => {
+      const { line: withoutCategory, category } = extractTrailingCategory(line)
+      return { ...splitTitleAndDescription(withoutCategory), category }
+    })
     .filter((goal) => goal.title.length > 0)
 }

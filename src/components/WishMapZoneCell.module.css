@@ -1,0 +1,252 @@
+.cell {
+  position: relative;
+}
+
+.photo {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.photoImg {
+  /* width/height/left/top are set inline (driven by photoScale) so the element itself can be
+     rendered larger than the cell — that's what gives panning a real margin to move within. */
+  position: absolute;
+  object-fit: cover;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.photoImgEditable {
+  /* "grab"/"grabbing" map to OS hand-cursor bitmaps that some embedded Chromium hosts (e.g. the
+     VS Code webview) load asynchronously and can fail to repaint when crossing element
+     boundaries quickly, leaving the cursor invisible. "move" is a basic CSS2.1 keyword with no
+     such loading step and renders reliably everywhere. */
+  cursor: move;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.zoneLabel {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.pickButton {
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  font-size: 0.9rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.pickButton:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.deletePhotoButton {
+  position: absolute;
+  top: var(--space-2);
+  right: var(--space-2);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.7rem;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.photo:hover .deletePhotoButton {
+  opacity: 1;
+}
+
+.deletePhotoButton:hover {
+  background: white;
+  color: black;
+}
+
+.addDescriptionButton {
+  position: absolute;
+  bottom: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.75rem;
+}
+
+.textWrap {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: max-content;
+  max-width: 90%;
+}
+
+.text {
+  display: -webkit-box;
+  color: white;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
+  font-weight: 600;
+  text-align: center;
+  white-space: pre-wrap;
+  /* line-height is set inline from state.lineHeight (adjustable in the text editor) — decorative
+     fonts can need a lot more room than plain ones before their ascenders/flourishes stop getting
+     clipped by the line-clamp box below. */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+.textEditable {
+  cursor: move;
+  touch-action: none;
+}
+
+.resizeHandle,
+.deleteHandle {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(0, 0, 0, 0.55);
+  color: white;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.textWrap:hover .resizeHandle,
+.textWrap:hover .deleteHandle {
+  opacity: 1;
+}
+
+.resizeHandle {
+  cursor: ew-resize;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.resizeHandleLeft {
+  left: calc(-22px - var(--space-2));
+}
+
+.resizeHandleRight {
+  right: calc(-22px - var(--space-2));
+}
+
+.deleteHandle {
+  cursor: pointer;
+  top: 50%;
+  transform: translateY(-50%);
+  right: calc(2 * (-22px - var(--space-2)));
+}
+
+.arrowIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.editorScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.textEditor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: min(420px, 90vw);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.textInput {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.textEditorActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.fontButtonWrap {
+  position: relative;
+}
+
+.fontButton,
+.saveTextButton {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  font-size: 0.85rem;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.fontButton:hover,
+.saveTextButton:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}
+
+.lineHeightRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1;
+  justify-content: center;
+}
+
+.lineHeightLabel {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.lineHeightSlider {
+  accent-color: var(--color-text);
+  max-width: 100px;
+}

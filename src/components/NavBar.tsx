@@ -25,6 +25,12 @@ export function NavBar() {
         >
           Дневник благодарностей
         </NavLink>
+        <NavLink
+          to="/wish-map"
+          className={({ isActive }) => (isActive ? styles.linkActive : styles.link)}
+        >
+          Карта желаний
+        </NavLink>
       </div>
       <ThemeToggle />
     </nav>

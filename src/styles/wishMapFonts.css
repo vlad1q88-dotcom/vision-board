@@ -1,0 +1,153 @@
+/* Designer fonts for the wish map's text overlay. Registered here once and listed in
+   src/db/wishMapZones.ts (FONT_OPTIONS) — adding another font later means dropping the file in
+   src/assets/fonts, adding its @font-face below, and one entry in FONT_OPTIONS. */
+
+@font-face {
+  font-family: 'Anonymous Pro';
+  src: url('../assets/fonts/AnonymousPro-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Detstvo';
+  src: url('../assets/fonts/Detstvo.ttf');
+}
+
+@font-face {
+  font-family: 'Dikoe Disko';
+  src: url('../assets/fonts/Dikoe Disko.ttf');
+}
+
+@font-face {
+  font-family: 'Dudka';
+  src: url('../assets/fonts/Dudka Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Dudka Thin';
+  src: url('../assets/fonts/Dudka Thin.ttf');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Ekaterina Velikaya Two';
+  src: url('../assets/fonts/Ekaterina_Velikaya_Two.ttf');
+}
+
+@font-face {
+  font-family: 'Felidae';
+  src: url('../assets/fonts/Felidae.ttf');
+}
+
+@font-face {
+  font-family: 'Horovod';
+  src: url('../assets/fonts/Horovod-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('../assets/fonts/Inter-VariableFont_opsz,wght.ttf');
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: 'Inter Italic';
+  src: url('../assets/fonts/Inter-Italic-VariableFont_opsz,wght.ttf');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Kosmos129';
+  src: url('../assets/fonts/Kosmos129.ttf');
+}
+
+@font-face {
+  font-family: 'Kosolapa Script';
+  src: url('../assets/fonts/KosolapaScript-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'LUNNA';
+  src: url('../assets/fonts/LUNNA.ttf');
+}
+
+@font-face {
+  font-family: 'Lena';
+  src: url('../assets/fonts/Lena.ttf');
+}
+
+@font-face {
+  font-family: 'Lionelofparis';
+  src: url('../assets/fonts/Lionelofparis.ttf');
+}
+
+@font-face {
+  font-family: 'Manrope';
+  src: url('../assets/fonts/Manrope-VariableFont_wght.ttf');
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: 'Optima Cyr';
+  src: url('../assets/fonts/Optima Cyr.ttf');
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  src: url('../assets/fonts/PlayfairDisplay-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Playfair Display Italic';
+  src: url('../assets/fonts/PlayfairDisplay-Italic.ttf');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Playfair Display Variable';
+  src: url('../assets/fonts/PlayfairDisplay-VariableFont_wght.ttf');
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: 'Playfair Display Italic Variable';
+  src: url('../assets/fonts/PlayfairDisplay-Italic-VariableFont_wght.ttf');
+  font-weight: 100 900;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Pribambas';
+  src: url('../assets/fonts/Pribambas-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'Risha Neo';
+  src: url('../assets/fonts/RishaNeo.ttf');
+}
+
+@font-face {
+  font-family: 'Singfried';
+  src: url('../assets/fonts/Singfried-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'TikTok Sans';
+  src: url('../assets/fonts/TikTokSans[opsz,slnt,wdth,wght].ttf');
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: 'Wimsic Mudreza 1';
+  src: url('../assets/fonts/Wimsic Mudreza 1.ttf');
+}
+
+@font-face {
+  font-family: 'Young Love ES';
+  src: url('../assets/fonts/Young Love ES.ttf');
+}
+
+@font-face {
+  font-family: 'Denistina EN';
+  src: url('../assets/fonts/denistina_en.ttf');
+}

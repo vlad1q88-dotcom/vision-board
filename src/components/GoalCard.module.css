@@ -29,6 +29,12 @@
   flex-shrink: 0;
 }
 
+.category {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
 .iconButton {
   background: transparent;
   border: 1px solid var(--color-border);

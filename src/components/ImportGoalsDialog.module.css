@@ -61,11 +61,17 @@
 }
 
 .confirm {
-  background: var(--color-accent-strong);
-  border: none;
-  color: white;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   border-radius: var(--radius-sm);
   padding: var(--space-2) var(--space-4);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.confirm:hover:not(:disabled) {
+  background: var(--color-text);
+  color: var(--color-bg);
 }
 
 .confirm:disabled {

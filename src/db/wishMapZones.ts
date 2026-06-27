@@ -3,7 +3,6 @@ import type { WishMapZoneState, WishMapZones } from '../types'
 export interface ZoneDefinition {
   key: string
   label: string
-  allowDirectUpload?: boolean
 }
 
 // 3x3 layout, row by row (top-left → bottom-right).
@@ -12,7 +11,7 @@ export const WISH_MAP_ZONES: ZoneDefinition[] = [
   { key: 'self', label: 'Я / состояние' },
   { key: 'health', label: 'Здоровье и тело' },
   { key: 'environment', label: 'Окружение и влияние' },
-  { key: 'center', label: 'Фото себя', allowDirectUpload: true },
+  { key: 'center', label: 'Фото себя' },
   { key: 'career', label: 'Деньги и карьера' },
   { key: 'family', label: 'Отношения / семья' },
   { key: 'leisure', label: 'Отдых и впечатления' },
@@ -79,8 +78,8 @@ export const ASPECT_RATIO_OPTIONS: AspectRatioOption[] = [
 
 export const DEFAULT_ASPECT_RATIO = ASPECT_RATIO_OPTIONS[0].value
 export const DEFAULT_FONT = FONT_OPTIONS[0].value
-export const MIN_FONT_SIZE = 12
-export const MAX_FONT_SIZE = 72
+export const MIN_FONT_SIZE = 6
+export const MAX_FONT_SIZE = 36
 export const DEFAULT_FONT_SIZE = MIN_FONT_SIZE
 export const MIN_LINE_HEIGHT = 1
 export const MAX_LINE_HEIGHT = 3.6

@@ -2,18 +2,22 @@ import { useMemo, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import { addGoal, completeGoals, deleteGoals } from '../db/goalRepo'
+import { addWishlistItems } from '../db/wishlistRepo'
 import { ALL_CATEGORIES, DEFAULT_CATEGORY } from '../db/categories'
 import { useGoals } from '../hooks/useGoals'
+import { useWishlistItems } from '../hooks/useWishlistItems'
 import { GoalCard } from '../components/GoalCard'
 import { GoalForm } from '../components/GoalForm'
 import { CategoryFilter } from '../components/CategoryFilter'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ImportGoalsDialog } from '../components/ImportGoalsDialog'
 import { NavBar } from '../components/NavBar'
+import { WishlistButton } from '../components/WishlistButton'
 import styles from './GoalsListPage.module.css'
 
 export function GoalsListPage() {
   const goals = useGoals()
+  const wishlistItems = useWishlistItems()
   const [searchParams] = useSearchParams()
   const expandId = searchParams.get('expand')
   const [isAddingGoal, setIsAddingGoal] = useState(false)
@@ -38,6 +42,15 @@ export function GoalsListPage() {
     setSelectedIds(new Set())
   }
 
+  async function handleAddSelectedToWishlist() {
+    const existingGoalIds = new Set(
+      wishlistItems.filter((item) => item.goalId !== undefined).map((item) => item.goalId),
+    )
+    const newGoalIds = Array.from(selectedIds).filter((id) => !existingGoalIds.has(id))
+    await addWishlistItems(newGoalIds)
+    exitSelection()
+  }
+
   const categories = useMemo(() => {
     const set = new Set<string>()
     goals.forEach((goal) => set.add(goal.category || DEFAULT_CATEGORY))
@@ -56,7 +69,10 @@ export function GoalsListPage() {
     <div className={styles.page}>
       <NavBar />
       <div className={styles.header}>
-        <h1 className={styles.title}>Цели</h1>
+        <div className={styles.titleRow}>
+          <h1 className={styles.title}>Цели</h1>
+          <WishlistButton />
+        </div>
         <div className={styles.headerActions}>
           <button type="button" className={styles.importButton} onClick={() => setIsImporting(true)}>
             Импорт из текста
@@ -66,6 +82,7 @@ export function GoalsListPage() {
             className={styles.addButton}
             onClick={() => setIsAddingGoal(true)}
             aria-label="Добавить цель"
+            title="Добавить цель"
           />
         </div>
       </div>
@@ -86,6 +103,14 @@ export function GoalsListPage() {
           <div className={styles.selectionActions}>
             <button type="button" className={styles.selectionCancel} onClick={exitSelection}>
               Отмена
+            </button>
+            <button
+              type="button"
+              className={styles.selectionAction}
+              disabled={selectedIds.size === 0}
+              onClick={handleAddSelectedToWishlist}
+            >
+              В вишлист
             </button>
             <button
               type="button"
@@ -135,6 +160,7 @@ export function GoalsListPage() {
         <GoalForm
           submitLabel="Добавить цель"
           categories={categories}
+          initialCategory={selectedCategory === ALL_CATEGORIES ? '' : selectedCategory}
           onCancel={() => setIsAddingGoal(false)}
           onSubmit={async (title, description, category) => {
             await addGoal(title, description, category)

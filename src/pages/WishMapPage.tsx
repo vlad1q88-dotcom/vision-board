@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { saveWishMap, deleteWishMap } from '../db/wishMapRepo'
 import { ASPECT_RATIO_OPTIONS, createEmptyZones, DEFAULT_ASPECT_RATIO } from '../db/wishMapZones'
 import { useWishMap } from '../hooks/useWishMap'
@@ -7,17 +7,22 @@ import { wishMapDraftCache } from '../hooks/wishMapDraftCache'
 import { WishMapGrid } from '../components/WishMapGrid'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { NavBar } from '../components/NavBar'
+import { WishMapExportPreview } from '../components/WishMapExportPreview'
+import { downloadBlob, exportWishMapImage } from '../utils/exportWishMapImage'
 import type { WishMapZoneState, WishMapZones } from '../types'
 import styles from './WishMapPage.module.css'
 
 export function WishMapPage() {
   const wishMap = useWishMap()
   const images = useAllImages()
+  const gridRef = useRef<HTMLDivElement>(null)
 
   const [isEditing, setIsEditing] = useState(wishMapDraftCache.isEditing)
   const [draftZones, setDraftZones] = useState<WishMapZones | null>(wishMapDraftCache.zones)
   const [draftAspectRatio, setDraftAspectRatio] = useState(wishMapDraftCache.aspectRatio)
   const [isConfirmingDelete, setIsConfirmingDelete] = useState(false)
+  const [isExporting, setIsExporting] = useState(false)
+  const [exportPreview, setExportPreview] = useState<{ blob: Blob; url: string } | null>(null)
 
   useEffect(() => {
     if (wishMap && draftZones === null) {
@@ -53,6 +58,28 @@ export function WishMapPage() {
       setDraftAspectRatio(wishMap.aspectRatio)
     }
     setIsEditing(false)
+  }
+
+  async function handleExport() {
+    if (!gridRef.current) return
+    setIsExporting(true)
+    try {
+      const blob = await exportWishMapImage(gridRef.current)
+      setExportPreview({ blob, url: URL.createObjectURL(blob) })
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  function closeExportPreview() {
+    if (exportPreview) URL.revokeObjectURL(exportPreview.url)
+    setExportPreview(null)
+  }
+
+  function confirmDownload() {
+    if (!exportPreview) return
+    downloadBlob(exportPreview.blob, 'карта-желаний.png')
+    closeExportPreview()
   }
 
   async function handleDelete() {
@@ -101,6 +128,9 @@ export function WishMapPage() {
             </>
           ) : (
             <>
+              <button type="button" className={styles.export} onClick={handleExport} disabled={isExporting}>
+                {isExporting ? 'Сохранение…' : 'Скачать как обои'}
+              </button>
               <button type="button" className={styles.edit} onClick={() => setIsEditing(true)}>
                 Изменить
               </button>
@@ -112,6 +142,7 @@ export function WishMapPage() {
         </div>
       </div>
       <WishMapGrid
+        ref={gridRef}
         zones={draftZones}
         isEditing={isEditing}
         aspectRatio={draftAspectRatio}
@@ -124,6 +155,13 @@ export function WishMapPage() {
           message="Карта будет удалена без возможности восстановления. Можно собрать новую с нуля."
           onCancel={() => setIsConfirmingDelete(false)}
           onConfirm={handleDelete}
+        />
+      )}
+      {exportPreview && (
+        <WishMapExportPreview
+          imageUrl={exportPreview.url}
+          onDownload={confirmDownload}
+          onClose={closeExportPreview}
         />
       )}
     </div>

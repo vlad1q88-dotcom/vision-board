@@ -21,7 +21,6 @@ interface WishMapZoneCellProps {
   state: WishMapZoneState
   isEditing: boolean
   images: ImageWithGoal[]
-  allowDirectUpload?: boolean
   onUpdate: (patch: Partial<WishMapZoneState>) => void
 }
 
@@ -46,7 +45,7 @@ function throttleToFrame<T extends (...args: never[]) => void>(fn: T): T {
   }) as T
 }
 
-export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUpload, onUpdate }: WishMapZoneCellProps) {
+export function WishMapZoneCell({ label, state, isEditing, images, onUpdate }: WishMapZoneCellProps) {
   const cellRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const pendingWheelDelta = useRef(0)
@@ -56,6 +55,7 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
   const [isPickingFont, setIsPickingFont] = useState(false)
   const [isConfirmingDeletePhoto, setIsConfirmingDeletePhoto] = useState(false)
   const [textDraft, setTextDraft] = useState(state.text)
+  const [editorOffset, setEditorOffset] = useState({ x: 0, y: 0 })
   const [cellSize, setCellSize] = useState({ width: 0, height: 0 })
   const [naturalSize, setNaturalSize] = useState({ width: 0, height: 0 })
 
@@ -96,6 +96,11 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
   const photoMarginY = Math.max(0, (renderedHeight - cellSize.height) / 2)
   const photoPanX = ((state.photoX - 50) / 50) * photoMarginX
   const photoPanY = ((state.photoY - 50) / 50) * photoMarginY
+  // Plain pixel left/top instead of left:50% + transform:translate(calc(...)) — equivalent
+  // centering math, but avoids a transform/calc() combo that DOM-to-image export tools
+  // (html2canvas) don't reliably parse, so the high-res wallpaper export matches the live crop.
+  const photoLeft = (cellSize.width - renderedWidth) / 2 + photoPanX
+  const photoTop = (cellSize.height - renderedHeight) / 2 + photoPanY
 
   function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -113,7 +118,28 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
   function openTextEditor() {
     setTextDraft(state.text)
     setIsPickingFont(false)
+    setEditorOffset({ x: 0, y: 0 })
     setIsTextEditorOpen(true)
+  }
+
+  function startEditorDrag(event: React.PointerEvent) {
+    event.preventDefault()
+    const startX = event.clientX
+    const startY = event.clientY
+    const startOffset = editorOffset
+
+    const handleMove = throttleToFrame((moveEvent: PointerEvent) => {
+      setEditorOffset({
+        x: startOffset.x + (moveEvent.clientX - startX),
+        y: startOffset.y + (moveEvent.clientY - startY),
+      })
+    })
+    function handleUp() {
+      window.removeEventListener('pointermove', handleMove)
+      window.removeEventListener('pointerup', handleUp)
+    }
+    window.addEventListener('pointermove', handleMove)
+    window.addEventListener('pointerup', handleUp)
   }
 
   function saveText() {
@@ -216,9 +242,8 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
                 ? {
                     width: `${renderedWidth}px`,
                     height: `${renderedHeight}px`,
-                    left: '50%',
-                    top: '50%',
-                    transform: `translate(calc(-50% + ${photoPanX}px), calc(-50% + ${photoPanY}px))`,
+                    left: `${photoLeft}px`,
+                    top: `${photoTop}px`,
                   }
                 : { inset: 0, width: '100%', height: '100%', objectFit: 'cover' }
             }
@@ -232,23 +257,24 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
           />
         )}
         {!photoUrl && (
-          <div className={styles.emptyState}>
+          <div className={styles.emptyState} data-wishmap-export-ignore="true">
             <span className={styles.zoneLabel}>{label}</span>
-            <button
-              type="button"
-              className={styles.pickButton}
-              onClick={() => (allowDirectUpload ? fileInputRef.current?.click() : setIsPickingPhoto(true))}
-            >
-              Выбрать фото
-            </button>
-            {allowDirectUpload && (
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleFileSelected}
-              />
+            {isEditing && (
+              <div className={styles.pickButtons}>
+                <button type="button" className={styles.pickButton} onClick={() => setIsPickingPhoto(true)}>
+                  Из галереи
+                </button>
+                <button type="button" className={styles.pickButton} onClick={() => fileInputRef.current?.click()}>
+                  С компьютера
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleFileSelected}
+                />
+              </div>
             )}
           </div>
         )}
@@ -348,7 +374,14 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
         )}
         {isTextEditorOpen && (
           <div className={styles.editorScrim} onClick={saveText}>
-            <div className={styles.textEditor} onClick={(event) => event.stopPropagation()}>
+            <div
+              className={styles.textEditor}
+              style={{ transform: `translate(${editorOffset.x}px, ${editorOffset.y}px)` }}
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className={styles.editorDragHandle} onPointerDown={startEditorDrag}>
+                <span className={styles.editorDragGrip} />
+              </div>
               <input
                 className={styles.textInput}
                 type="text"
@@ -375,17 +408,31 @@ export function WishMapZoneCell({ label, state, isEditing, images, allowDirectUp
                     />
                   )}
                 </div>
-                <div className={styles.lineHeightRow}>
-                  <span className={styles.lineHeightLabel}>Интервал</span>
-                  <input
-                    type="range"
-                    className={styles.lineHeightSlider}
-                    min={MIN_LINE_HEIGHT}
-                    max={MAX_LINE_HEIGHT}
-                    step={0.1}
-                    value={state.lineHeight}
-                    onChange={(event) => onUpdate({ lineHeight: Number(event.target.value) })}
-                  />
+                <div className={styles.sliderColumn}>
+                  <div className={styles.sliderRow}>
+                    <span className={styles.sliderLabel}>Размер</span>
+                    <input
+                      type="range"
+                      className={styles.sliderInput}
+                      min={MIN_FONT_SIZE}
+                      max={MAX_FONT_SIZE}
+                      step={1}
+                      value={state.fontSize}
+                      onChange={(event) => onUpdate({ fontSize: Number(event.target.value) })}
+                    />
+                  </div>
+                  <div className={styles.sliderRow}>
+                    <span className={styles.sliderLabel}>Интервал</span>
+                    <input
+                      type="range"
+                      className={styles.sliderInput}
+                      min={MIN_LINE_HEIGHT}
+                      max={MAX_LINE_HEIGHT}
+                      step={0.1}
+                      value={state.lineHeight}
+                      onChange={(event) => onUpdate({ lineHeight: Number(event.target.value) })}
+                    />
+                  </div>
                 </div>
                 <button type="button" className={styles.saveTextButton} onClick={saveText}>
                   Сохранить

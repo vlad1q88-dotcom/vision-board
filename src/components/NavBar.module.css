@@ -1,8 +1,23 @@
+/* Breaks out of whatever max-width the surrounding page uses (960px on Gallery/Wish Map vs 720px
+   on Goals/Journal) so .nav below can re-center itself at one fixed, page-independent width — the
+   classic full-bleed trick: a 100vw box can only land flush with the viewport edges if its margin
+   (not width) carries the -50vw offset, since percentage margins resolve against the *parent's*
+   width while 100vw is fixed, letting the two cancel out regardless of the parent's own size. */
+.bar {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding-inline: var(--space-4);
 }
 
 .links {

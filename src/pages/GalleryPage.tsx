@@ -59,10 +59,10 @@ export function GalleryPage() {
         <h1 className={styles.title}>Общая галерея</h1>
         {canStartSlideshow ? (
           <Link to={slideshowHref} className={styles.slideshowLink}>
-            Запустить слайдшоу
+            Визуализация
           </Link>
         ) : (
-          <span className={styles.slideshowLinkDisabled}>Запустить слайдшоу</span>
+          <span className={styles.slideshowLinkDisabled}>Визуализация</span>
         )}
       </div>
       {categories.length > 0 && (

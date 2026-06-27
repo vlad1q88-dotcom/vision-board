@@ -4,6 +4,15 @@
   box-sizing: border-box;
 }
 
+html {
+  /* Without this, pages that don't need to scroll render slightly wider (no scrollbar eating
+     into the content width) than pages that do — shifting anything centered against the page
+     (e.g. NavBar's full-bleed breakout, see NavBar.module.css) by half the scrollbar's width
+     depending on which page happens to have enough content to scroll. Reserving the gutter
+     unconditionally keeps the document width — and therefore all centering — consistent. */
+  scrollbar-gutter: stable;
+}
+
 html,
 body {
   margin: 0;

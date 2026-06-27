@@ -64,8 +64,15 @@
   font-family: inherit;
 }
 
+/* The native calendar-picker glyph is drawn by the browser in its light-mode ink (dark lines on
+   transparent), which goes near-invisible on a dark input. Inverting then tinting it warm keeps
+   the icon's own internal shading while landing on the same beige as other dark-theme icon fixes. */
+:global(html[data-theme='dark']) .dateInput::-webkit-calendar-picker-indicator {
+  filter: invert(85%) sepia(35%) saturate(350%) brightness(0.95);
+}
+
 .dateSave {
-  background: var(--color-accent-strong);
+  background: var(--color-add);
   border: none;
   color: white;
   border-radius: var(--radius-sm);

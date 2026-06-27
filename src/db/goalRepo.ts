@@ -85,8 +85,9 @@ export async function deleteGoal(id: number): Promise<void> {
 
 export async function deleteGoals(ids: number[]): Promise<void> {
   if (ids.length === 0) return
-  await db.transaction('rw', db.goals, db.images, async () => {
+  await db.transaction('rw', db.goals, db.images, db.wishlistItems, async () => {
     await db.images.where('goalId').anyOf(ids).delete()
+    await db.wishlistItems.where('goalId').anyOf(ids).delete()
     await db.goals.bulkDelete(ids)
   })
 }
@@ -112,8 +113,9 @@ export async function completeGoal(id: number): Promise<void> {
 
 export async function completeGoals(ids: number[]): Promise<void> {
   if (ids.length === 0) return
-  await db.transaction('rw', db.goals, db.images, async () => {
+  await db.transaction('rw', db.goals, db.images, db.wishlistItems, async () => {
     await db.images.where('goalId').anyOf(ids).delete()
+    await db.wishlistItems.where('goalId').anyOf(ids).delete()
     const now = Date.now()
     // Description is the pre-completion "vision" text; it gets cleared here so the
     // journal starts blank and the user writes a fresh, factual account of what happened.

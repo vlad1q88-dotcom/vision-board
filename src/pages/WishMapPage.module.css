@@ -37,7 +37,8 @@
 .cancel,
 .save,
 .edit,
-.delete {
+.delete,
+.export {
   background: transparent;
   border: 1px solid var(--color-border);
   color: var(--color-text);
@@ -50,7 +51,13 @@
 .cancel:hover,
 .save:hover,
 .edit:hover,
-.delete:hover {
+.delete:hover,
+.export:hover {
   background: var(--color-text);
   color: var(--color-bg);
+}
+
+.export:disabled {
+  opacity: 0.6;
+  cursor: default;
 }

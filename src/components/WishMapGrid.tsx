@@ -1,3 +1,4 @@
+import { forwardRef } from 'react'
 import { WISH_MAP_ZONES } from '../db/wishMapZones'
 import { WishMapZoneCell } from './WishMapZoneCell'
 import type { ImageWithGoal, WishMapZoneState, WishMapZones } from '../types'
@@ -11,9 +12,12 @@ interface WishMapGridProps {
   onUpdateZone: (key: string, patch: Partial<WishMapZoneState>) => void
 }
 
-export function WishMapGrid({ zones, isEditing, aspectRatio, images, onUpdateZone }: WishMapGridProps) {
+export const WishMapGrid = forwardRef<HTMLDivElement, WishMapGridProps>(function WishMapGrid(
+  { zones, isEditing, aspectRatio, images, onUpdateZone },
+  ref,
+) {
   return (
-    <div className={styles.grid} style={{ aspectRatio }}>
+    <div className={styles.grid} style={{ aspectRatio }} ref={ref}>
       {WISH_MAP_ZONES.map((zone) => (
         <WishMapZoneCell
           key={zone.key}
@@ -21,10 +25,9 @@ export function WishMapGrid({ zones, isEditing, aspectRatio, images, onUpdateZon
           state={zones[zone.key]}
           isEditing={isEditing}
           images={images}
-          allowDirectUpload={zone.allowDirectUpload}
           onUpdate={(patch) => onUpdateZone(zone.key, patch)}
         />
       ))}
     </div>
   )
-}
+})

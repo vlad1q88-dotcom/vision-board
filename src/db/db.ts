@@ -1,5 +1,5 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { Goal, ImageRecord, WishMap } from '../types'
+import type { Goal, ImageRecord, WishMap, Wishlist, WishlistItem } from '../types'
 import { DEFAULT_CATEGORY } from './categories'
 import { DEFAULT_ASPECT_RATIO, DEFAULT_FONT_SIZE } from './wishMapZones'
 
@@ -7,6 +7,8 @@ export const db = new Dexie('vision-board') as Dexie & {
   goals: EntityTable<Goal, 'id'>
   images: EntityTable<ImageRecord, 'id'>
   wishMap: EntityTable<WishMap, 'id'>
+  wishlist: EntityTable<Wishlist, 'id'>
+  wishlistItems: EntityTable<WishlistItem, 'id'>
 }
 
 db.version(1).stores({
@@ -47,3 +49,11 @@ db.version(4)
       }
     })
   })
+
+db.version(5).stores({
+  goals: '++id, order, createdAt, category',
+  images: '++id, goalId, category, order, createdAt',
+  wishMap: 'id',
+  wishlist: 'id',
+  wishlistItems: '++id, goalId, order, createdAt',
+})

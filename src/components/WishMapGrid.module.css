@@ -1,7 +1,13 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
+  /* minmax(0, 1fr), not bare 1fr: a bare `1fr` track has an implicit `auto` minimum, so it won't
+     shrink below its widest child's content width (e.g. the "Из галереи"/"С компьютера" pick
+     buttons) — on a narrow phone that forces columns wider than their fair share and the
+     overflow either clips (caught by `overflow: hidden` below) or visually bleeds into the
+     neighboring cell. `minmax(0, 1fr)` lets the column shrink and the cell's own content wrap
+     instead, without changing the column count (each cell stays a specific, fixed life-area zone). */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
   width: 100%;
   overflow: hidden;
   border-radius: var(--radius-md);

@@ -61,3 +61,11 @@
   opacity: 0.6;
   cursor: default;
 }
+
+@media (max-width: 600px) {
+  /* The 3x3 grid's cells (each a fixed life-area zone, not decorative columns) are already
+     tight on a phone — give them as much width as possible instead of the desktop side padding. */
+  .page {
+    padding-inline: var(--space-2);
+  }
+}

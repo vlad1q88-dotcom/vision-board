@@ -4,6 +4,7 @@
   left: 0;
   z-index: 350;
   min-width: 200px;
+  max-width: calc(100vw - 2 * var(--space-4));
   background: var(--color-surface-raised);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);

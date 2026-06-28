@@ -98,6 +98,13 @@
   opacity: 1;
 }
 
+/* :hover never fires on a touchscreen — without this, the button is unreachable on phones. */
+@media (hover: none) {
+  .deletePhotoButton {
+    opacity: 1;
+  }
+}
+
 .deletePhotoButton:hover {
   background: white;
   color: black;

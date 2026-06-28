@@ -58,3 +58,29 @@
   border-color: var(--color-add);
   color: white;
 }
+
+@media (max-width: 600px) {
+  .nav {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+
+  .links {
+    flex-wrap: wrap;
+  }
+
+  .link,
+  .linkActive {
+    padding: var(--space-1) var(--space-2);
+    font-size: 0.85rem;
+  }
+
+  /* With .nav wrapped, .controls can end up alone on its own line — `space-between` only
+     pushes it to the line's far end when there's another item sharing that line to space
+     against, so a lone item defaults to the line's start (left) instead. `margin-left: auto`
+     pushes it to the right of whichever line it lands on regardless of what else is there,
+     which matters here because BackupMenu's dropdown anchors via `right: 0` relative to it. */
+  .controls {
+    margin-left: auto;
+  }
+}

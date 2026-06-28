@@ -24,6 +24,10 @@
      "Дневник благодарностей", the longest) plus the theme toggle fit on one line. */
   --content-width: 840px;
 
+  /* Mobile breakpoint convention: `@media (max-width: 600px)`, written as a literal in each
+     component's own CSS file — there's no PostCSS custom-media plugin installed, so a variable
+     can't be substituted into a media query condition. Keep new mobile rules on this same value. */
+
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;

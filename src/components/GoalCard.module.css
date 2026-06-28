@@ -49,3 +49,9 @@
   margin: var(--space-2) 0 0;
   white-space: pre-wrap;
 }
+
+@media (max-width: 600px) {
+  .header {
+    flex-wrap: wrap;
+  }
+}

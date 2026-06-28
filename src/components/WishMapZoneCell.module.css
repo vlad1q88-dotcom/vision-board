@@ -61,6 +61,23 @@
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+@media (max-width: 600px) {
+  /* Each cell is only ~1/3 of the page width here — shrink the label/buttons so they wrap
+     within their own cell instead of forcing the grid column wider than its fair share. */
+  .zoneLabel {
+    font-size: 0.7rem;
+  }
+
+  .pickButtons {
+    gap: var(--space-1);
+  }
+
+  .pickButton {
+    padding: var(--space-1) var(--space-2);
+    font-size: 0.75rem;
+  }
+}
+
 .pickButton:hover {
   background: var(--color-text);
   color: var(--color-bg);
@@ -82,6 +99,13 @@
 
 .photo:hover .deletePhotoButton {
   opacity: 1;
+}
+
+/* :hover never fires on a touchscreen — without this, the button is unreachable on phones. */
+@media (hover: none) {
+  .deletePhotoButton {
+    opacity: 1;
+  }
 }
 
 .deletePhotoButton:hover {
@@ -153,6 +177,14 @@
 .textWrap:hover .resizeHandle,
 .textWrap:hover .deleteHandle {
   opacity: 1;
+}
+
+/* :hover never fires on a touchscreen — without this, these handles are unreachable on phones. */
+@media (hover: none) {
+  .resizeHandle,
+  .deleteHandle {
+    opacity: 1;
+  }
 }
 
 .resizeHandle {

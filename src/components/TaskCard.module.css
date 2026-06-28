@@ -99,3 +99,9 @@
   padding-left: var(--space-4);
   border-left: 2px solid var(--color-border);
 }
+
+@media (max-width: 600px) {
+  .header {
+    flex-wrap: wrap;
+  }
+}

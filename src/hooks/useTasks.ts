@@ -20,7 +20,8 @@ export function useTasks() {
             ...task,
             displayTitle: task.goalId !== undefined ? goal?.title ?? '' : task.title ?? '',
             displayDescription: task.goalId !== undefined ? goal?.description ?? '' : task.description ?? '',
-            displayCategory: task.goalId !== undefined ? goal?.category || DEFAULT_CATEGORY : DEFAULT_CATEGORY,
+            displayCategory:
+              task.goalId !== undefined ? goal?.category || DEFAULT_CATEGORY : task.category || DEFAULT_CATEGORY,
           } satisfies TaskWithGoal
         })
         .sort(compareByDeadlineThenOrder)

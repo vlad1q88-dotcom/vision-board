@@ -47,6 +47,17 @@ describe('addStandaloneTask / updateStandaloneTask', () => {
     expect(task?.title).toBe('Read two books')
     expect(task?.description).toBe('Finish the novel')
   })
+
+  it('defaults category to "Общие" and allows setting/updating it', async () => {
+    const id = await addStandaloneTask('Read a book')
+    expect((await db.tasks.get(id))?.category).toBe('Общие')
+
+    const withCategory = await addStandaloneTask('Run', '', 'Здоровье')
+    expect((await db.tasks.get(withCategory))?.category).toBe('Здоровье')
+
+    await updateStandaloneTask(withCategory, { category: 'Работа' })
+    expect((await db.tasks.get(withCategory))?.category).toBe('Работа')
+  })
 })
 
 describe('setTaskDone', () => {

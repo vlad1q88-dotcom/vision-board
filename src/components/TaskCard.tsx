@@ -11,6 +11,7 @@ import {
 } from '../db/taskRepo'
 import { CompletionToggle } from './CompletionToggle'
 import { ConfirmDialog } from './ConfirmDialog'
+import { GoalForm } from './GoalForm'
 import { ProgressRing } from './ProgressRing'
 import { SubtaskCard } from './SubtaskCard'
 import { SubtaskChecklist } from './SubtaskChecklist'
@@ -24,12 +25,12 @@ interface TaskCardProps {
   task: TaskWithGoal
   subtasks: SubtaskWithChildren[]
   statusFilter: StatusFilterValue
+  categories: string[]
 }
 
-export function TaskCard({ task, subtasks, statusFilter }: TaskCardProps) {
+export function TaskCard({ task, subtasks, statusFilter, categories }: TaskCardProps) {
   const [expanded, setExpanded] = useState(false)
-  const [titleDraft, setTitleDraft] = useState(task.title ?? '')
-  const [descriptionDraft, setDescriptionDraft] = useState(task.description ?? '')
+  const [editing, setEditing] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const dragControls = useDragControls()
   const isStandalone = task.goalId === undefined
@@ -53,56 +54,63 @@ export function TaskCard({ task, subtasks, statusFilter }: TaskCardProps) {
   return (
     <Reorder.Item value={task} as="div" dragListener={false} dragControls={dragControls} className={styles.cardWrap}>
       <div className={styles.card}>
-        <ProgressRing total={totalChildren} completed={completedChildren} />
-        <div className={styles.header}>
-          <div className={styles.dragHandle} onPointerDown={(event) => dragControls.start(event)}>
-            <span className={styles.dragGrip} />
-          </div>
-          <CompletionToggle onComplete={handleComplete} confirmCopy={isStandalone ? null : undefined} />
-          <button type="button" className={styles.titleButton} onClick={() => setExpanded((value) => !value)}>
-            {task.displayTitle || 'Без названия'}
-          </button>
-          <span className={styles.category}>{task.displayCategory}</span>
-          <input
-            type="date"
-            className={styles.dateInput}
-            value={task.deadline === undefined ? '' : toDateInputValue(task.deadline)}
-            onChange={(event) =>
-              updateTaskDeadline(task.id, event.target.value ? fromDateInputValue(event.target.value) : undefined)
-            }
+        {editing ? (
+          <GoalForm
+            initialTitle={task.title}
+            initialDescription={task.description}
+            initialCategory={task.category}
+            categories={categories}
+            titlePlaceholder="Название задачи"
+            submitLabel="Сохранить"
+            onCancel={() => setEditing(false)}
+            onSubmit={async (title, description, category) => {
+              await updateStandaloneTask(task.id, { title, description, category })
+              setEditing(false)
+            }}
           />
-          {isStandalone && (
-            <button type="button" className={styles.iconButton} onClick={() => setConfirmingDelete(true)}>
-              Удал.
-            </button>
-          )}
-        </div>
-        {expanded && (
-          <div className={styles.body}>
-            {isStandalone ? (
-              <>
-                <input
-                  type="text"
-                  className={styles.titleInput}
-                  value={titleDraft}
-                  placeholder="Название задачи"
-                  onChange={(event) => setTitleDraft(event.target.value)}
-                  onBlur={() => updateStandaloneTask(task.id, { title: titleDraft.trim() })}
+        ) : (
+          <>
+            <ProgressRing total={totalChildren} completed={completedChildren} />
+            <div className={styles.header}>
+              <div className={styles.dragHandle} onPointerDown={(event) => dragControls.start(event)}>
+                <span className={styles.dragGrip} />
+              </div>
+              <CompletionToggle onComplete={handleComplete} confirmCopy={isStandalone ? null : undefined} />
+              <button type="button" className={styles.titleButton} onClick={() => setExpanded((value) => !value)}>
+                {task.displayTitle || 'Без названия'}
+              </button>
+              <span className={styles.category}>{task.displayCategory}</span>
+              <input
+                type="date"
+                className={styles.dateInput}
+                value={task.deadline === undefined ? '' : toDateInputValue(task.deadline)}
+                onChange={(event) =>
+                  updateTaskDeadline(task.id, event.target.value ? fromDateInputValue(event.target.value) : undefined)
+                }
+              />
+              {isStandalone && (
+                <button type="button" className={styles.iconButton} onClick={() => setEditing(true)}>
+                  Изм.
+                </button>
+              )}
+              {isStandalone && (
+                <button type="button" className={styles.iconButton} onClick={() => setConfirmingDelete(true)}>
+                  Удал.
+                </button>
+              )}
+            </div>
+            {expanded && (
+              <div className={styles.body}>
+                {task.displayDescription && <p className={styles.description}>{task.displayDescription}</p>}
+                <SubtaskChecklist
+                  rows={checklistRows}
+                  allowSeparate
+                  parentDeadline={task.deadline}
+                  {...checklistHandlers}
                 />
-                <textarea
-                  className={styles.descriptionInput}
-                  rows={3}
-                  value={descriptionDraft}
-                  placeholder="Описание"
-                  onChange={(event) => setDescriptionDraft(event.target.value)}
-                  onBlur={() => updateStandaloneTask(task.id, { description: descriptionDraft })}
-                />
-              </>
-            ) : (
-              task.displayDescription && <p className={styles.description}>{task.displayDescription}</p>
+              </div>
             )}
-            <SubtaskChecklist rows={checklistRows} allowSeparate {...checklistHandlers} />
-          </div>
+          </>
         )}
       </div>
       {separatedSubtasks.length > 0 && (
@@ -120,7 +128,7 @@ export function TaskCard({ task, subtasks, statusFilter }: TaskCardProps) {
           className={styles.separatedList}
         >
           {separatedSubtasks.map((subtask) => (
-            <SubtaskCard key={subtask.id} subtask={subtask} />
+            <SubtaskCard key={subtask.id} subtask={subtask} taskDeadline={task.deadline} />
           ))}
         </Reorder.Group>
       )}

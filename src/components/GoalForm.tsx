@@ -9,6 +9,7 @@ interface GoalFormProps {
   initialCategory?: string
   categories: string[]
   submitLabel: string
+  titlePlaceholder?: string
   onSubmit: (title: string, description: string, category: string) => void
   onCancel?: () => void
 }
@@ -19,6 +20,7 @@ export function GoalForm({
   initialCategory = '',
   categories,
   submitLabel,
+  titlePlaceholder = 'Название цели',
   onSubmit,
   onCancel,
 }: GoalFormProps) {
@@ -43,7 +45,7 @@ export function GoalForm({
       <input
         className={styles.input}
         type="text"
-        placeholder="Название цели"
+        placeholder={titlePlaceholder}
         value={title}
         onChange={(event) => setTitle(event.target.value)}
         required

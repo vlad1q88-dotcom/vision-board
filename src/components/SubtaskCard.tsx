@@ -13,6 +13,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 import { ProgressRing } from './ProgressRing'
 import { SubtaskChecklist } from './SubtaskChecklist'
 import { fromDateInputValue, toDateInputValue } from '../utils/dateInput'
+import { DEADLINE_CONFLICT_MESSAGE, exceedsParentDeadline } from '../utils/deadlineConflict'
 import type { SubtaskWithChildren } from '../types'
 import styles from './SubtaskCard.module.css'
 
@@ -20,13 +21,25 @@ const DONE_LABELS = { selected: 'Снять отметку выполнения'
 
 interface SubtaskCardProps {
   subtask: SubtaskWithChildren
+  taskDeadline?: number
 }
 
-export function SubtaskCard({ subtask }: SubtaskCardProps) {
+export function SubtaskCard({ subtask, taskDeadline }: SubtaskCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
+  const [dateWarning, setDateWarning] = useState<string | null>(null)
   const childHandlers = depth2ChecklistHandlers(subtask.id)
   const dragControls = useDragControls()
+
+  function handleDeadlineChange(value: string) {
+    const newDeadline = value ? fromDateInputValue(value) : undefined
+    if (exceedsParentDeadline(newDeadline, taskDeadline)) {
+      setDateWarning(DEADLINE_CONFLICT_MESSAGE)
+      return
+    }
+    setDateWarning(null)
+    updateSubtask(subtask.id, { deadline: newDeadline })
+  }
 
   return (
     <Reorder.Item value={subtask} as="div" dragListener={false} dragControls={dragControls} className={styles.card}>
@@ -51,17 +64,21 @@ export function SubtaskCard({ subtask }: SubtaskCardProps) {
           type="date"
           className={styles.dateInput}
           value={subtask.deadline === undefined ? '' : toDateInputValue(subtask.deadline)}
-          onChange={(event) =>
-            updateSubtask(subtask.id, { deadline: event.target.value ? fromDateInputValue(event.target.value) : undefined })
-          }
+          onChange={(event) => handleDeadlineChange(event.target.value)}
         />
         <button type="button" className={styles.iconButton} onClick={() => setConfirmingDelete(true)}>
           Удал.
         </button>
       </div>
+      {dateWarning && <span className={styles.dateWarning}>{dateWarning}</span>}
       {expanded && (
         <div className={styles.body}>
-          <SubtaskChecklist rows={subtask.children} allowSeparate={false} {...childHandlers} />
+          <SubtaskChecklist
+            rows={subtask.children}
+            allowSeparate={false}
+            parentDeadline={subtask.deadline}
+            {...childHandlers}
+          />
         </div>
       )}
       {confirmingDelete && (

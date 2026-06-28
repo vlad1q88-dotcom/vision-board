@@ -1,4 +1,4 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo, useState } from 'react'
 import { Reorder } from 'motion/react'
 import { useTasks } from '../hooks/useTasks'
 import { useSubtasksByTask } from '../hooks/useSubtasksByTask'
@@ -7,6 +7,7 @@ import { addStandaloneTask, reorderTasks } from '../db/taskRepo'
 import { ALL_CATEGORIES } from '../db/categories'
 import { NavBar } from '../components/NavBar'
 import { TaskCard } from '../components/TaskCard'
+import { GoalForm } from '../components/GoalForm'
 import { FlatDeadlineList } from '../components/FlatDeadlineList'
 import { StatusFilterPills, type StatusFilterValue } from '../components/StatusFilterPills'
 import { DateRangeFilter } from '../components/DateRangeFilter'
@@ -15,52 +16,6 @@ import { PlusIcon } from '../components/PlusIcon'
 import { matchesStatusFilter } from '../utils/taskStatusFilter'
 import type { FlatDeadlineRow } from '../hooks/useFlatDeadlineItems'
 import styles from './PlanPage.module.css'
-
-interface AddTaskFormProps {
-  onSubmit: (title: string, description: string) => void
-  onCancel: () => void
-}
-
-function AddTaskForm({ onSubmit, onCancel }: AddTaskFormProps) {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-
-  function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    const trimmed = title.trim()
-    if (!trimmed) return
-    onSubmit(trimmed, description.trim())
-  }
-
-  return (
-    <form className={styles.addForm} onSubmit={handleSubmit}>
-      <input
-        className={styles.addInput}
-        type="text"
-        placeholder="Название задачи"
-        value={title}
-        onChange={(event) => setTitle(event.target.value)}
-        autoFocus
-        required
-      />
-      <textarea
-        className={styles.addTextarea}
-        rows={2}
-        placeholder="Описание (необязательно)"
-        value={description}
-        onChange={(event) => setDescription(event.target.value)}
-      />
-      <div className={styles.addActions}>
-        <button type="button" className={styles.cancel} onClick={onCancel}>
-          Отмена
-        </button>
-        <button type="submit" className={styles.submit}>
-          Добавить
-        </button>
-      </div>
-    </form>
-  )
-}
 
 const EMPTY_MESSAGES: Partial<Record<StatusFilterValue, string>> = {
   in_progress: 'Пока нет задач в работе.',
@@ -129,10 +84,13 @@ export function PlanPage() {
         </button>
       </div>
       {isAdding && (
-        <AddTaskForm
+        <GoalForm
+          submitLabel="Добавить"
+          titlePlaceholder="Название задачи"
+          categories={categories}
           onCancel={() => setIsAdding(false)}
-          onSubmit={async (title, description) => {
-            await addStandaloneTask(title, description)
+          onSubmit={async (title, description, category) => {
+            await addStandaloneTask(title, description, category)
             setIsAdding(false)
           }}
         />
@@ -159,6 +117,7 @@ export function PlanPage() {
                 task={task}
                 subtasks={subtasksByTask.get(task.id) ?? []}
                 statusFilter={statusFilter}
+                categories={categories}
               />
             ))}
           </Reorder.Group>

@@ -9,6 +9,7 @@ interface SubtaskChecklistProps {
   // bind to add/update/toggle/delete rows.
   rows: Subtask[]
   allowSeparate: boolean
+  parentDeadline?: number
   onAdd: () => Promise<unknown>
   onUpdate: (id: number, patch: Partial<Pick<Subtask, 'title' | 'deadline'>>) => void
   onToggleDone: (id: number) => void
@@ -16,7 +17,16 @@ interface SubtaskChecklistProps {
   onSeparate?: (id: number) => void
 }
 
-export function SubtaskChecklist({ rows, allowSeparate, onAdd, onUpdate, onToggleDone, onDelete, onSeparate }: SubtaskChecklistProps) {
+export function SubtaskChecklist({
+  rows,
+  allowSeparate,
+  parentDeadline,
+  onAdd,
+  onUpdate,
+  onToggleDone,
+  onDelete,
+  onSeparate,
+}: SubtaskChecklistProps) {
   return (
     <div className={styles.checklist}>
       {rows.map((row) => (
@@ -24,6 +34,7 @@ export function SubtaskChecklist({ rows, allowSeparate, onAdd, onUpdate, onToggl
           key={row.id}
           subtask={row}
           allowSeparate={allowSeparate}
+          parentDeadline={parentDeadline}
           onUpdate={(patch) => onUpdate(row.id, patch)}
           onToggleDone={() => onToggleDone(row.id)}
           onDelete={() => onDelete(row.id)}

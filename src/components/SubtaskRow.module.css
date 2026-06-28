@@ -41,6 +41,11 @@
   filter: invert(85%) sepia(35%) saturate(350%) brightness(0.95);
 }
 
+.dateWarning {
+  color: var(--color-danger);
+  font-size: 0.75rem;
+}
+
 .actionButton {
   flex-shrink: 0;
   background: transparent;

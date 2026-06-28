@@ -95,9 +95,10 @@ export interface Task {
   // Set when this task mirrors a goal; omitted for standalone tasks added directly in Plan.
   goalId?: number
   // Only used/editable when goalId is omitted — goal-linked tasks display the goal's own
-  // (live) title/description instead, same convention as WishlistItem.title.
+  // (live) title/description/category instead, same convention as WishlistItem.title.
   title?: string
   description?: string
+  category?: string
   // Settable regardless of goalId — unlike title/description, the deadline has no Goal
   // counterpart, so it's a Plan-only field editable on every task.
   deadline?: number

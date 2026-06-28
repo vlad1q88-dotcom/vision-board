@@ -1,4 +1,5 @@
 import { db } from './db'
+import { DEFAULT_CATEGORY } from './categories'
 import type { Subtask, Task, TaskStatus } from '../types'
 
 export async function listTasks(): Promise<Task[]> {
@@ -21,11 +22,16 @@ export async function createTaskForGoal(goalId: number): Promise<number> {
   })
 }
 
-export async function addStandaloneTask(title: string, description = ''): Promise<number> {
+export async function addStandaloneTask(
+  title: string,
+  description = '',
+  category: string = DEFAULT_CATEGORY,
+): Promise<number> {
   const maxOrder = await db.tasks.orderBy('order').last()
   return db.tasks.add({
     title,
     description,
+    category,
     status: 'plan',
     order: maxOrder ? maxOrder.order + 1 : 0,
     createdAt: Date.now(),
@@ -34,7 +40,7 @@ export async function addStandaloneTask(title: string, description = ''): Promis
 
 export async function updateStandaloneTask(
   id: number,
-  patch: Partial<Pick<Task, 'title' | 'description'>>,
+  patch: Partial<Pick<Task, 'title' | 'description' | 'category'>>,
 ): Promise<void> {
   await db.tasks.update(id, patch)
 }

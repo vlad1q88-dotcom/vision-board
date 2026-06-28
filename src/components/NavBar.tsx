@@ -1,4 +1,5 @@
 import { NavLink } from 'react-router-dom'
+import { BackupMenu } from './BackupMenu'
 import { ThemeToggle } from './ThemeToggle'
 import styles from './NavBar.module.css'
 
@@ -39,7 +40,10 @@ export function NavBar() {
             Карта желаний
           </NavLink>
         </div>
-        <ThemeToggle />
+        <div className={styles.controls}>
+          <BackupMenu />
+          <ThemeToggle />
+        </div>
       </nav>
     </div>
   )

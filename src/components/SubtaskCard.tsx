@@ -28,8 +28,20 @@ export function SubtaskCard({ subtask, taskDeadline }: SubtaskCardProps) {
   const [expanded, setExpanded] = useState(false)
   const [confirmingDelete, setConfirmingDelete] = useState(false)
   const [dateWarning, setDateWarning] = useState<string | null>(null)
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [titleDraft, setTitleDraft] = useState(subtask.title)
   const childHandlers = depth2ChecklistHandlers(subtask.id)
   const dragControls = useDragControls()
+
+  function handleStartEditTitle() {
+    setTitleDraft(subtask.title)
+    setIsEditingTitle(true)
+  }
+
+  function handleTitleSave() {
+    updateSubtask(subtask.id, { title: titleDraft.trim() })
+    setIsEditingTitle(false)
+  }
 
   function handleDeadlineChange(value: string) {
     const newDeadline = value ? fromDateInputValue(value) : undefined
@@ -49,12 +61,33 @@ export function SubtaskCard({ subtask, taskDeadline }: SubtaskCardProps) {
           <span className={styles.dragGrip} />
         </div>
         <SelectionToggle isSelected={subtask.done} onToggle={() => toggleSubtaskDone(subtask.id)} ariaLabel={DONE_LABELS} />
-        <button
-          type="button"
-          className={subtask.done ? `${styles.titleButton} ${styles.done}` : styles.titleButton}
-          onClick={() => setExpanded((value) => !value)}
-        >
-          {subtask.title || 'Без названия'}
+        {isEditingTitle ? (
+          <input
+            type="text"
+            className={styles.titleInput}
+            value={titleDraft}
+            autoFocus
+            onChange={(event) => setTitleDraft(event.target.value)}
+            onBlur={handleTitleSave}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') event.currentTarget.blur()
+              if (event.key === 'Escape') {
+                setTitleDraft(subtask.title)
+                setIsEditingTitle(false)
+              }
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            className={subtask.done ? `${styles.titleButton} ${styles.done}` : styles.titleButton}
+            onClick={() => setExpanded((value) => !value)}
+          >
+            {subtask.title || 'Без названия'}
+          </button>
+        )}
+        <button type="button" className={styles.iconButton} onClick={handleStartEditTitle}>
+          Изм.
         </button>
         <StatusBadge
           status={subtask.status}

@@ -1,0 +1,15 @@
+.ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.track {
+  fill: none;
+  stroke: var(--color-add);
+  stroke-width: 2;
+  transition: stroke-dasharray 0.3s ease, stroke-dashoffset 0.3s ease;
+}

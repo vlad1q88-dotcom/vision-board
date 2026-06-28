@@ -1,0 +1,52 @@
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.titleInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid transparent;
+  color: var(--color-text);
+  padding: var(--space-1) var(--space-2);
+  transition: border-color 0.15s ease;
+}
+
+.titleInput:hover,
+.titleInput:focus {
+  border-bottom-color: var(--color-border);
+}
+
+.titleInput.done {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.dateInput {
+  flex-shrink: 0;
+  width: 130px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+/* Same dark-theme calendar-glyph fix as JournalEntryCard.module.css's .dateInput. */
+:global(html[data-theme='dark']) .dateInput::-webkit-calendar-picker-indicator {
+  filter: invert(85%) sepia(35%) saturate(350%) brightness(0.95);
+}
+
+.actionButton {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  font-size: 0.8rem;
+}

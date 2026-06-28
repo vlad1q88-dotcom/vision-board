@@ -13,6 +13,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ImportGoalsDialog } from '../components/ImportGoalsDialog'
 import { NavBar } from '../components/NavBar'
 import { WishlistButton } from '../components/WishlistButton'
+import { PlusIcon } from '../components/PlusIcon'
 import styles from './GoalsListPage.module.css'
 
 export function GoalsListPage() {
@@ -83,7 +84,9 @@ export function GoalsListPage() {
             onClick={() => setIsAddingGoal(true)}
             aria-label="Добавить цель"
             title="Добавить цель"
-          />
+          >
+            <PlusIcon size={18} />
+          </button>
         </div>
       </div>
       {goals.length > 0 && (

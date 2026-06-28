@@ -3,6 +3,8 @@ import { deleteGoal, updateGoalCompletedAt, updateGoalStory } from '../db/goalRe
 import { useGoalImages } from '../hooks/useGoalImages'
 import { ThumbnailStrip } from './ThumbnailStrip'
 import { ConfirmDialog } from './ConfirmDialog'
+import { fromDateInputValue, toDateInputValue } from '../utils/dateInput'
+import { DEFAULT_CATEGORY } from '../db/categories'
 import type { Goal } from '../types'
 import styles from './JournalEntryCard.module.css'
 
@@ -18,19 +20,6 @@ function formatCompletedDate(completedAt: number | undefined): string {
     month: 'long',
     day: 'numeric',
   })
-}
-
-function toDateInputValue(completedAt: number | undefined): string {
-  const date = completedAt === undefined ? new Date() : new Date(completedAt)
-  const year = date.getFullYear()
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  return `${year}-${month}-${day}`
-}
-
-function fromDateInputValue(value: string): number {
-  const [year, month, day] = value.split('-').map(Number)
-  return new Date(year, month - 1, day, 12, 0, 0).getTime()
 }
 
 export function JournalEntryCard({ goal, forceExpand }: JournalEntryCardProps) {
@@ -71,6 +60,7 @@ export function JournalEntryCard({ goal, forceExpand }: JournalEntryCardProps) {
         >
           {goal.title}
         </button>
+        <span className={styles.category}>{goal.category || DEFAULT_CATEGORY}</span>
         <div className={styles.headerActions}>
           {isEditingDate ? (
             <div className={styles.dateForm}>

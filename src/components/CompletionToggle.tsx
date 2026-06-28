@@ -4,13 +4,34 @@ import { ConfettiBurst } from './ConfettiBurst'
 import { ConfirmDialog } from './ConfirmDialog'
 import styles from './CompletionToggle.module.css'
 
+interface ConfirmCopy {
+  title: string
+  message: string
+  confirmLabel?: string
+}
+
 interface CompletionToggleProps {
   onComplete: () => void
+  // Override the default goal-completion confirm-dialog copy, or skip the dialog entirely
+  // (pass null) for low-stakes completions that don't destroy anything (e.g. a standalone
+  // Plan task with no linked goal — just a status flip, nothing to warn about).
+  confirmCopy?: ConfirmCopy | null
+  ariaLabel?: string
 }
 
 const CELEBRATION_MS = 700
 
-export function CompletionToggle({ onComplete }: CompletionToggleProps) {
+const DEFAULT_CONFIRM_COPY: ConfirmCopy = {
+  title: 'Отметить цель выполненной?',
+  message: 'Фото-визуализации этой цели удалятся без возврата, а сама цель переедет в дневник благодарностей.',
+  confirmLabel: 'Готово!',
+}
+
+export function CompletionToggle({
+  onComplete,
+  confirmCopy = DEFAULT_CONFIRM_COPY,
+  ariaLabel = 'Отметить цель выполненной',
+}: CompletionToggleProps) {
   const [isConfirming, setIsConfirming] = useState(false)
   const [isCelebrating, setIsCelebrating] = useState(false)
 
@@ -20,14 +41,22 @@ export function CompletionToggle({ onComplete }: CompletionToggleProps) {
     setTimeout(onComplete, CELEBRATION_MS)
   }
 
+  function handleClick() {
+    if (confirmCopy === null) {
+      handleConfirm()
+    } else {
+      setIsConfirming(true)
+    }
+  }
+
   return (
     <>
       <button
         type="button"
         className={isCelebrating ? `${styles.circle} ${styles.done}` : styles.circle}
-        onClick={() => setIsConfirming(true)}
+        onClick={handleClick}
         disabled={isCelebrating}
-        aria-label="Отметить цель выполненной"
+        aria-label={ariaLabel}
       >
         <AnimatePresence>{isCelebrating && <ConfettiBurst key="confetti" />}</AnimatePresence>
         {isCelebrating ? (
@@ -62,11 +91,11 @@ export function CompletionToggle({ onComplete }: CompletionToggleProps) {
           </span>
         )}
       </button>
-      {isConfirming && (
+      {isConfirming && confirmCopy && (
         <ConfirmDialog
-          title="Отметить цель выполненной?"
-          message="Фото-визуализации этой цели удалятся без возврата, а сама цель переедет в дневник благодарностей."
-          confirmLabel="Готово!"
+          title={confirmCopy.title}
+          message={confirmCopy.message}
+          confirmLabel={confirmCopy.confirmLabel ?? 'Готово!'}
           onCancel={() => setIsConfirming(false)}
           onConfirm={handleConfirm}
         />

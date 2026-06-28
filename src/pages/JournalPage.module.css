@@ -1,5 +1,5 @@
 .page {
-  max-width: 720px;
+  max-width: var(--content-width);
   margin: 0 auto;
   padding: var(--space-6) var(--space-4) var(--space-8);
   display: flex;
@@ -20,7 +20,9 @@
 }
 
 .addButton {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
   width: 38px;
   height: 38px;
@@ -29,28 +31,6 @@
   border: none;
   background: var(--color-add);
   color: white;
-}
-
-.addButton::before,
-.addButton::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: currentColor;
-  border-radius: 1px;
-}
-
-.addButton::before {
-  width: 16px;
-  height: 2.4px;
-  transform: translate(-50%, -50%);
-}
-
-.addButton::after {
-  width: 2.4px;
-  height: 16px;
-  transform: translate(-50%, -50%);
 }
 
 .addForm {

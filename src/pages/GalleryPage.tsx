@@ -4,6 +4,7 @@ import { useAllImages } from '../hooks/useAllImages'
 import { ALL_CATEGORIES, GALLERY_CATEGORY_STORAGE_KEY } from '../db/categories'
 import { GalleryGrid } from '../components/GalleryGrid'
 import { CategoryFilter } from '../components/CategoryFilter'
+import { DateRangeFilter } from '../components/DateRangeFilter'
 import { LightboxOverlay } from '../components/LightboxOverlay'
 import { NavBar } from '../components/NavBar'
 import styles from './GalleryPage.module.css'
@@ -20,6 +21,9 @@ export function GalleryPage() {
     localStorage.setItem(GALLERY_CATEGORY_STORAGE_KEY, category)
   }
 
+  const [dateFrom, setDateFrom] = useState<number | null>(null)
+  const [dateTo, setDateTo] = useState<number | null>(null)
+
   const categories = useMemo(
     () => Array.from(new Set(images.map((image) => image.goalCategory))),
     [images],
@@ -27,10 +31,14 @@ export function GalleryPage() {
 
   const visibleImages = useMemo(
     () =>
-      selectedCategory === ALL_CATEGORIES
-        ? images
-        : images.filter((image) => image.goalCategory === selectedCategory),
-    [images, selectedCategory],
+      images
+        .filter((image) => selectedCategory === ALL_CATEGORIES || image.goalCategory === selectedCategory)
+        .filter((image) => {
+          if (dateFrom === null || dateTo === null) return true
+          if (image.relevantDate === undefined) return false
+          return image.relevantDate >= dateFrom && image.relevantDate <= dateTo
+        }),
+    [images, selectedCategory, dateFrom, dateTo],
   )
 
   // A photo can be opened directly (e.g. from a goal/journal card) while a different
@@ -65,6 +73,7 @@ export function GalleryPage() {
           <span className={styles.slideshowLinkDisabled}>Визуализация</span>
         )}
       </div>
+      <DateRangeFilter from={dateFrom} to={dateTo} onChange={(from, to) => { setDateFrom(from); setDateTo(to) }} />
       {categories.length > 0 && (
         <CategoryFilter categories={categories} selected={selectedCategory} onSelect={selectCategory} />
       )}

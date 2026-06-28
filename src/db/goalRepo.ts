@@ -1,6 +1,7 @@
 import { db } from './db'
 import type { Goal } from '../types'
 import { DEFAULT_CATEGORY } from './categories'
+import { createTaskForGoal, deleteSubtasksForTasks } from './taskRepo'
 
 export async function listActiveGoals(): Promise<Goal[]> {
   const goals = await db.goals.orderBy('order').toArray()
@@ -19,22 +20,26 @@ export async function addGoal(
   description: string,
   category: string = DEFAULT_CATEGORY,
 ): Promise<number> {
-  const now = Date.now()
-  const maxOrder = await db.goals.orderBy('order').last()
-  return db.goals.add({
-    title,
-    description,
-    category,
-    createdAt: now,
-    updatedAt: now,
-    order: maxOrder ? maxOrder.order + 1 : 0,
+  return db.transaction('rw', db.goals, db.tasks, async () => {
+    const now = Date.now()
+    const maxOrder = await db.goals.orderBy('order').last()
+    const id = await db.goals.add({
+      title,
+      description,
+      category,
+      createdAt: now,
+      updatedAt: now,
+      order: maxOrder ? maxOrder.order + 1 : 0,
+    })
+    await createTaskForGoal(id)
+    return id
   })
 }
 
 export async function addGoals(
   entries: { title: string; description: string; category?: string }[],
 ): Promise<number[]> {
-  return db.transaction('rw', db.goals, async () => {
+  return db.transaction('rw', db.goals, db.tasks, async () => {
     const maxOrder = await db.goals.orderBy('order').last()
     let nextOrder = maxOrder ? maxOrder.order + 1 : 0
     const ids: number[] = []
@@ -48,6 +53,7 @@ export async function addGoals(
         updatedAt: now,
         order: nextOrder,
       })
+      await createTaskForGoal(id)
       ids.push(id)
       nextOrder += 1
     }
@@ -55,14 +61,14 @@ export async function addGoals(
   })
 }
 
-export async function addGratitudeEntry(title: string): Promise<number> {
+export async function addGratitudeEntry(title: string, category: string = DEFAULT_CATEGORY): Promise<number> {
   const now = Date.now()
   const maxOrder = await db.goals.orderBy('order').last()
   return db.goals.add({
     title,
     description: '',
     story: '',
-    category: DEFAULT_CATEGORY,
+    category,
     createdAt: now,
     updatedAt: now,
     order: maxOrder ? maxOrder.order + 1 : 0,
@@ -85,9 +91,12 @@ export async function deleteGoal(id: number): Promise<void> {
 
 export async function deleteGoals(ids: number[]): Promise<void> {
   if (ids.length === 0) return
-  await db.transaction('rw', db.goals, db.images, db.wishlistItems, async () => {
+  await db.transaction('rw', db.goals, db.images, db.wishlistItems, db.tasks, db.subtasks, async () => {
     await db.images.where('goalId').anyOf(ids).delete()
     await db.wishlistItems.where('goalId').anyOf(ids).delete()
+    const taskIds = await db.tasks.where('goalId').anyOf(ids).primaryKeys()
+    await deleteSubtasksForTasks(taskIds)
+    await db.tasks.where('goalId').anyOf(ids).delete()
     await db.goals.bulkDelete(ids)
   })
 }
@@ -113,9 +122,12 @@ export async function completeGoal(id: number): Promise<void> {
 
 export async function completeGoals(ids: number[]): Promise<void> {
   if (ids.length === 0) return
-  await db.transaction('rw', db.goals, db.images, db.wishlistItems, async () => {
+  await db.transaction('rw', db.goals, db.images, db.wishlistItems, db.tasks, db.subtasks, async () => {
     await db.images.where('goalId').anyOf(ids).delete()
     await db.wishlistItems.where('goalId').anyOf(ids).delete()
+    const taskIds = await db.tasks.where('goalId').anyOf(ids).primaryKeys()
+    await deleteSubtasksForTasks(taskIds)
+    await db.tasks.where('goalId').anyOf(ids).delete()
     const now = Date.now()
     // Description is the pre-completion "vision" text; it gets cleared here so the
     // journal starts blank and the user writes a fresh, factual account of what happened.

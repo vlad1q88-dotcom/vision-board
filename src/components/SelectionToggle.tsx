@@ -3,15 +3,18 @@ import styles from './SelectionToggle.module.css'
 interface SelectionToggleProps {
   isSelected: boolean
   onToggle: () => void
+  ariaLabel?: { selected: string; unselected: string }
 }
 
-export function SelectionToggle({ isSelected, onToggle }: SelectionToggleProps) {
+const DEFAULT_LABELS = { selected: 'Снять выбор цели', unselected: 'Выбрать цель' }
+
+export function SelectionToggle({ isSelected, onToggle, ariaLabel = DEFAULT_LABELS }: SelectionToggleProps) {
   return (
     <button
       type="button"
       className={isSelected ? `${styles.circle} ${styles.selected}` : styles.circle}
       onClick={onToggle}
-      aria-label={isSelected ? 'Снять выбор цели' : 'Выбрать цель'}
+      aria-label={isSelected ? ariaLabel.selected : ariaLabel.unselected}
     >
       {isSelected && (
         <svg className={styles.check} viewBox="0 0 24 24">

@@ -15,6 +15,12 @@ export function NavBar() {
             Цели
           </NavLink>
           <NavLink
+            to="/plan"
+            className={({ isActive }) => (isActive ? styles.linkActive : styles.link)}
+          >
+            План
+          </NavLink>
+          <NavLink
             to="/journal"
             className={({ isActive }) => (isActive ? styles.linkActive : styles.link)}
           >

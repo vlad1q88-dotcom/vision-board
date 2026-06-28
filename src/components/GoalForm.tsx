@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { DEFAULT_CATEGORY } from '../db/categories'
+import { CategoryPicker } from './CategoryPicker'
 import styles from './GoalForm.module.css'
 
 interface GoalFormProps {
@@ -24,7 +25,6 @@ export function GoalForm({
   const [title, setTitle] = useState(initialTitle)
   const [description, setDescription] = useState(initialDescription)
   const [category, setCategory] = useState(initialCategory)
-  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -48,53 +48,7 @@ export function GoalForm({
         onChange={(event) => setTitle(event.target.value)}
         required
       />
-      <div className={styles.categoryField}>
-        <input
-          className={styles.input}
-          type="text"
-          placeholder={`Категория (по умолчанию «${DEFAULT_CATEGORY}»)`}
-          value={category}
-          onChange={(event) => setCategory(event.target.value)}
-        />
-        <button
-          type="button"
-          className={styles.categoryToggle}
-          onClick={() => setIsCategoryMenuOpen((open) => !open)}
-          aria-label="Выбрать категорию"
-          title="Выбрать категорию"
-        >
-          <svg viewBox="0 0 24 24" className={styles.categoryToggleIcon}>
-            <path
-              d="M6 9l6 6 6-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </button>
-        {isCategoryMenuOpen && (
-          <>
-            <div className={styles.categoryScrim} onClick={() => setIsCategoryMenuOpen(false)} />
-            <div className={styles.categoryMenu}>
-              {categories.map((option) => (
-                <button
-                  type="button"
-                  key={option}
-                  className={styles.categoryOption}
-                  onClick={() => {
-                    setCategory(option)
-                    setIsCategoryMenuOpen(false)
-                  }}
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-      </div>
+      <CategoryPicker value={category} onChange={setCategory} categories={categories} />
       <textarea
         className={styles.textarea}
         placeholder="Описание"

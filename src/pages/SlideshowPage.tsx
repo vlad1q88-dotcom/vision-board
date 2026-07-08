@@ -43,13 +43,15 @@ export function SlideshowPage() {
     )
   }
 
-  const current = images[currentIndex]
+  // До первого тика перемешивания (и на случай рассинхрона индекса со списком фото)
+  // не показываем ни одного слайда — просто чёрный экран на кадр.
+  const current = currentIndex === null ? undefined : images[currentIndex]
   const durationMs = computeIntervalMs(count)
 
   return (
     <div className={styles.page} onClick={exit}>
       <AnimatePresence mode="sync">
-        <SlideshowImage key={current.id} image={current} durationMs={durationMs} />
+        {current && <SlideshowImage key={current.id} image={current} durationMs={durationMs} />}
       </AnimatePresence>
     </div>
   )

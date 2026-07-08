@@ -24,8 +24,13 @@ export function buildShuffledQueue(count: number, avoidLeadingRepeatOf: number |
   return queue
 }
 
-export function useSlideshowSequence(count: number, onComplete: () => void): number {
-  const [currentIndex, setCurrentIndex] = useState(0)
+// Returns null until the first shuffled index is picked. Starting at a real index (e.g. 0)
+// would flash images[0] for one frame before the shuffle effect runs — AnimatePresence
+// registers that transient slide, and because its <img> mounts only after the object URL
+// resolves (i.e. already inside an exiting slide), the exit animation never completes and
+// the photo stays stuck in the DOM under every later slide.
+export function useSlideshowSequence(count: number, onComplete: () => void): number | null {
+  const [currentIndex, setCurrentIndex] = useState<number | null>(null)
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
 

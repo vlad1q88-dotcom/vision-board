@@ -153,7 +153,8 @@ export function WishlistItemEditor({ item, images, onClose }: WishlistItemEditor
   }
 
   return (
-    <div className={styles.scrim} onClick={onClose}>
+    <>
+      <div className={styles.scrim} onClick={onClose}>
       <div
         className={styles.editor}
         style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
@@ -248,12 +249,15 @@ export function WishlistItemEditor({ item, images, onClose }: WishlistItemEditor
           </button>
         </div>
       </div>
+      </div>
+      {/* Пикер намеренно ВНЕ .scrim: подложка закрывает редактор по клику, и вложенный в неё
+          пикер закрывался бы целиком при любом клике по фото (события всплывают до подложки). */}
       {isPickingPhoto && (
         <WishMapPhotoPicker
           onSelect={(imageId) => updateWishlistItem(item.id, { imageId, customBlob: undefined, ...resetPhotoFraming() })}
           onClose={() => setIsPickingPhoto(false)}
         />
       )}
-    </div>
+    </>
   )
 }

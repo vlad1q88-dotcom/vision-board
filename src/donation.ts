@@ -1,3 +1,3 @@
 // Ссылка на страницу доната (CloudTips/ЮMoney и т.п.). Пустая строка = кнопка «Поддержать»
 // в шапке не показывается вообще — можно деплоить до того, как страница доната заведена.
-export const DONATION_URL = ''
+export const DONATION_URL = 'https://qr.nspk.ru/AS1A004B0HOFFKRR9A4OE1M84OM6R4D7'

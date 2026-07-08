@@ -28,6 +28,15 @@ jobs:
         with:
           node-version: 24
       - run: npm ci
+      # The license files are stored WITH a UTF-8 BOM because Unicode NSIS needs it to
+      # decode the Cyrillic text correctly on Windows. dmgbuild on macOS however encodes
+      # the license into legacy mac_roman/mac_cyrillic, which have no BOM character and
+      # crash on it — so strip the BOM from the checkout copy before building the DMG.
+      - if: runner.os == 'macOS'
+        run: |
+          for f in buildResources/license_*.txt; do
+            python3 -c "import sys; p = sys.argv[1]; d = open(p, 'rb').read(); open(p, 'wb').write(d[3:] if d[:3] == b'\xef\xbb\xbf' else d)" "$f"
+          done
       - run: npm run dist:electron
       - uses: actions/upload-artifact@v4
         with:

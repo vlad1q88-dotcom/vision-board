@@ -1,0 +1,18 @@
+﻿END USER LICENSE AGREEMENT
+Vision Board
+
+By installing or using the Vision Board application (the "Application"), you accept the terms of this agreement. If you do not agree, do not install or use the Application.
+
+1. PERSONAL USE ONLY
+The Application is provided exclusively for personal, non-commercial use. Selling, renting, redistributing the Application for a fee, or including it in commercial products or services without the author's written permission is prohibited.
+
+2. DATA
+All data (goals, photos, journal entries, etc.) is stored locally on your device only. The Application does not transmit data to any server and the author has no access to it. The user is responsible for keeping the data safe, including making backups with the Application's built-in export.
+
+3. NO WARRANTY
+The Application is provided "as is", without any warranties, express or implied. The author is not liable for any damages, including data loss, arising from the use of or inability to use the Application.
+
+4. MISCELLANEOUS
+The author may update the Application and this agreement. Continued use after an update constitutes acceptance of the revised terms.
+
+Installing the Application constitutes full and unconditional acceptance of this agreement.

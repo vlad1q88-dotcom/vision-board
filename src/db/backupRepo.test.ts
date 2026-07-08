@@ -1,7 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-// This app's tsconfig deliberately has no Node types (it's browser-only code) — node:buffer
-// itself resolves fine at runtime under Vitest's Node-based test runner, TS just can't see it.
-// @ts-expect-error -- no ambient types for 'node:buffer' under this project's browser-only tsconfig
 import { Blob as NodeBlob } from 'node:buffer'
 
 vi.mock('./thumbnails', () => ({

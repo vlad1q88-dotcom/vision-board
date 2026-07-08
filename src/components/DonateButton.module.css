@@ -1,0 +1,83 @@
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.toggle:hover {
+  background: var(--color-surface);
+  color: var(--color-add);
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  max-width: 320px;
+  width: 100%;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+/* Stays white in both themes — see the scan-reliability comment in DonateButton.tsx. */
+.qrPlate {
+  display: flex;
+  background: white;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  min-width: 240px;
+  min-height: 240px;
+}
+
+.link {
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  word-break: break-all;
+  text-align: center;
+}
+
+.close {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.close:hover {
+  background: var(--color-text);
+  color: var(--color-bg);
+}

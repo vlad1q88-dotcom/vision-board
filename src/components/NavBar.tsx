@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { BackupMenu } from './BackupMenu'
+import { DonateButton } from './DonateButton'
 import { ThemeToggle } from './ThemeToggle'
 import styles from './NavBar.module.css'
 
@@ -41,6 +42,7 @@ export function NavBar() {
           </NavLink>
         </div>
         <div className={styles.controls}>
+          <DonateButton />
           <BackupMenu />
           <ThemeToggle />
         </div>

@@ -168,14 +168,17 @@ export function WishMapZoneCell({ label, state, isEditing, images, onUpdate }: W
     window.addEventListener('pointerup', handleUp)
   }
 
-  function startResize(event: React.PointerEvent) {
+  // direction: which way this handle stretches the text outward — +1 for the right handle
+  // (drag right = grow), -1 for the left one (drag LEFT = grow); without it the left handle
+  // would shrink the text exactly when the user pulls it outward.
+  function startResize(event: React.PointerEvent, direction: 1 | -1) {
     event.preventDefault()
     event.stopPropagation()
     const startX = event.clientX
     const startSize = state.fontSize
 
     const handleMove = throttleToFrame((moveEvent: PointerEvent) => {
-      const delta = moveEvent.clientX - startX
+      const delta = (moveEvent.clientX - startX) * direction
       onUpdate({ fontSize: clamp(startSize + delta * 0.3, MIN_FONT_SIZE, MAX_FONT_SIZE) })
     })
     function handleUp() {
@@ -297,7 +300,7 @@ export function WishMapZoneCell({ label, state, isEditing, images, onUpdate }: W
                 <button
                   type="button"
                   className={`${styles.resizeHandle} ${styles.resizeHandleLeft}`}
-                  onPointerDown={startResize}
+                  onPointerDown={(event) => startResize(event, -1)}
                   aria-label="Изменить размер текста"
                 >
                   <svg viewBox="0 0 24 24" className={styles.arrowIcon}>
@@ -314,7 +317,7 @@ export function WishMapZoneCell({ label, state, isEditing, images, onUpdate }: W
                 <button
                   type="button"
                   className={`${styles.resizeHandle} ${styles.resizeHandleRight}`}
-                  onPointerDown={startResize}
+                  onPointerDown={(event) => startResize(event, 1)}
                   aria-label="Изменить размер текста"
                 >
                   <svg viewBox="0 0 24 24" className={styles.arrowIcon}>

@@ -18,6 +18,7 @@
   "build": {
     "appId": "ru.vlad.visionboard",
     "productName": "Vision Board",
+    "afterPack": "scripts/macAdhocSign.cjs",
     "files": [
       "dist/**",
       "electron/**"

@@ -1,0 +1,35 @@
+name: Desktop builds
+
+# Manual trigger: Actions tab -> "Desktop builds" -> Run workflow.
+# Produces unsigned installers as downloadable artifacts on the run page:
+# Windows NSIS .exe (SmartScreen will warn on first launch) and macOS .dmg
+# (Gatekeeper requires right-click -> Open on first launch).
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            artifact: Vision-Board-Windows
+            path: release/*.exe
+          - os: macos-latest
+            artifact: Vision-Board-macOS
+            path: release/*.dmg
+    runs-on: ${{ matrix.os }}
+    env:
+      # Build unsigned — no code-signing certificates are configured.
+      CSC_IDENTITY_AUTO_DISCOVERY: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run dist:electron
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: ${{ matrix.path }}

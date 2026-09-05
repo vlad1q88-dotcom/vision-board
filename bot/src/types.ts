@@ -13,6 +13,10 @@ export interface Report {
   reps: number;
   at: string;
   photoFileId: string;
+  /** Идентификатор самого файла: один скриншот нельзя засчитать в челлендж дважды. */
+  photoUniqueId: string;
+  /** Как получено число: распознано со скриншота или проставлено вручную. */
+  source: 'ocr' | 'manual';
 }
 
 export interface ParticipantResult {

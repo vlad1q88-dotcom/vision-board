@@ -18,9 +18,9 @@ function sample(): Challenge {
   const challenge = created.value;
   joinChallenge(challenge, 2, 'Максимка', NOW);
   startChallenge(challenge, '2026-09-01');
-  addReport({ challenge, userId: 1, reps: 10, day: '2026-09-01', photoFileId: 'p', now: NOW });
-  addReport({ challenge, userId: 1, reps: 15, day: '2026-09-02', photoFileId: 'p', now: NOW });
-  addReport({ challenge, userId: 2, reps: 60, day: '2026-09-02', photoFileId: 'p', now: NOW });
+  addReport({ challenge, photoUniqueId: 'p101', userId: 1, reps: 10, day: '2026-09-01', photoFileId: 'p', now: NOW });
+  addReport({ challenge, photoUniqueId: 'p102', userId: 1, reps: 15, day: '2026-09-02', photoFileId: 'p', now: NOW });
+  addReport({ challenge, photoUniqueId: 'p202', userId: 2, reps: 60, day: '2026-09-02', photoFileId: 'p', now: NOW });
   return challenge;
 }
 

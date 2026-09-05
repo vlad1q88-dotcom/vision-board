@@ -36,7 +36,7 @@ function join(challenge: Challenge, userId: number, nickname: string): void {
 }
 
 function report(challenge: Challenge, userId: number, day: string, reps: number) {
-  return addReport({ challenge, userId, reps, day, photoFileId: 'photo', now: NOW });
+  return addReport({ challenge, userId, reps, day, photoFileId: 'photo', photoUniqueId: `${userId}-${day}`, now: NOW });
 }
 
 test('в челлендже не больше 6 участников', () => {
@@ -86,6 +86,32 @@ test('второй отчёт за тот же день не принимает�
 
   // На следующий день — можно снова.
   assert.equal(report(challenge, 1, '2026-09-02', 70).ok, true);
+});
+
+test('один и тот же скриншот второй раз не проходит', () => {
+  const challenge = makeChallenge();
+  join(challenge, 2, 'Sergey');
+  startChallenge(challenge, '2026-09-01');
+
+  const first = addReport({
+    challenge, userId: 1, reps: 50, day: '2026-09-01',
+    photoFileId: 'file', photoUniqueId: 'same-shot', now: NOW,
+  });
+  assert.equal(first.ok, true);
+
+  // Вчерашний скриншот на следующий день не засчитывается.
+  const repeat = addReport({
+    challenge, userId: 1, reps: 50, day: '2026-09-02',
+    photoFileId: 'file', photoUniqueId: 'same-shot', now: NOW,
+  });
+  assert.equal(repeat.ok, false);
+
+  // И чужой скриншот тоже: в челлендже он уже был.
+  const stolen = addReport({
+    challenge, userId: 2, reps: 50, day: '2026-09-02',
+    photoFileId: 'file', photoUniqueId: 'same-shot', now: NOW,
+  });
+  assert.equal(stolen.ok, false);
 });
 
 test('отчёт вне срока и от чужого не принимается', () => {

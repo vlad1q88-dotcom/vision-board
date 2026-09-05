@@ -230,6 +230,8 @@ export class ChallengeService {
     userId: number;
     reps: number;
     photoFileId: string;
+    photoUniqueId?: string;
+    source?: 'ocr' | 'manual';
   }): Result<ReportOutcome> {
     const challenge = this.challenge(input.code);
     if (!challenge) return fail('Челлендж с таким кодом не найден.');
@@ -240,6 +242,8 @@ export class ChallengeService {
       reps: input.reps,
       day,
       photoFileId: input.photoFileId,
+      photoUniqueId: input.photoUniqueId ?? '',
+      source: input.source,
       now: this.#now(),
     });
     if (!added.ok) return added;

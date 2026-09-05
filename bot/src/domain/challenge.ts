@@ -148,11 +148,13 @@ export interface AddReportInput {
   reps: number;
   day: string;
   photoFileId: string;
+  photoUniqueId: string;
   now: Date;
+  source?: 'ocr' | 'manual';
 }
 
 export function addReport(input: AddReportInput): Result<Report> {
-  const { challenge, userId, reps, day, photoFileId, now } = input;
+  const { challenge, userId, reps, day, photoFileId, photoUniqueId, now } = input;
   if (challenge.status !== 'active') {
     return fail('Челлендж ещё не запущен или уже завершён — отчёт не принят.');
   }
@@ -172,7 +174,19 @@ export function addReport(input: AddReportInput): Result<Report> {
   if (hasReportOn(challenge, userId, day)) {
     return fail('За сегодня отчёт уже принят. Больше одного отчёта в день нельзя.');
   }
-  const report: Report = { userId, day, reps, at: now.toISOString(), photoFileId };
+  // Один и тот же скриншот второй раз в этот челлендж не проходит.
+  if (photoUniqueId && challenge.reports.some((item) => item.photoUniqueId === photoUniqueId)) {
+    return fail('Этот скриншот уже засчитан в этом челлендже. Нужен свежий.');
+  }
+  const report: Report = {
+    userId,
+    day,
+    reps,
+    at: now.toISOString(),
+    photoFileId,
+    photoUniqueId,
+    source: input.source ?? 'ocr',
+  };
   challenge.reports.push(report);
   return ok(report);
 }

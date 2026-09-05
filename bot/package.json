@@ -12,7 +12,9 @@
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.86",
-    "grammy": "^1.40.1"
+    "@tesseract.js-data/eng": "^1.0.0",
+    "grammy": "^1.40.1",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.13.2",

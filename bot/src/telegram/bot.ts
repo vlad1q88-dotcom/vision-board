@@ -14,6 +14,8 @@ import {
 } from '../domain/challenge.ts';
 import { checkNickname } from '../domain/nickname.ts';
 import { days as daysRu } from '../domain/plural.ts';
+import { createOcrEngine, type OcrEngine } from '../ocr/engine.ts';
+import { FAILURE_HINTS, readDailyReps } from '../ocr/screenshot.ts';
 import { renderBoard } from '../render/leaderboard.ts';
 import { boardCaption, buildBoardView, escapeHtml } from '../render/view.ts';
 import type { ChallengeService, FinishedChallenge } from '../service.ts';
@@ -23,11 +25,25 @@ import { HELP, RULES } from './texts.ts';
 type Session =
   | { kind: 'new'; step: 'title' | 'days' | 'goal' | 'nick'; title?: string; days?: number; goal?: number }
   | { kind: 'join'; step: 'code' | 'nick'; code?: string }
-  | { kind: 'nick'; code: string }
-  | { kind: 'report'; code: string; photoFileId: string };
+  | { kind: 'nick'; code: string };
 
-export function wire(bot: Bot, service: ChallengeService): void {
+/** Распознанный отчёт, который ждёт выбора челленджа. */
+interface PendingReport {
+  reps: number;
+  photoFileId: string;
+  photoUniqueId: string;
+  codes: string[];
+}
+
+export interface WireOptions {
+  /** Движок распознавания; в тестах подменяется заглушкой. */
+  ocr?: OcrEngine;
+}
+
+export function wire(bot: Bot, service: ChallengeService, options: WireOptions = {}): void {
   const sessions = new Map<number, Session>();
+  const pendingReports = new Map<number, PendingReport>();
+  const ocr = options.ocr ?? createOcrEngine();
 
   // --- вспомогательное --------------------------------------------------
 
@@ -148,10 +164,16 @@ export function wire(bot: Bot, service: ChallengeService): void {
     ctx: Context,
     code: string,
     reps: number,
-    photoFileId: string,
+    photo: { fileId: string; uniqueId: string },
   ): Promise<void> {
     const id = userId(ctx);
-    const outcome = service.submitReport({ code, userId: id, reps, photoFileId });
+    const outcome = service.submitReport({
+      code,
+      userId: id,
+      reps,
+      photoFileId: photo.fileId,
+      photoUniqueId: photo.uniqueId,
+    });
     if (!outcome.ok) {
       await ctx.reply(outcome.error);
       return;
@@ -449,11 +471,21 @@ export function wire(bot: Bot, service: ChallengeService): void {
 
   // --- отчёты -----------------------------------------------------------
 
+  /** Скачивает фото из Телеграма, чтобы прогнать его через OCR. */
+  async function downloadPhoto(fileId: string): Promise<Buffer> {
+    const file = await bot.api.getFile(fileId);
+    if (!file.file_path) throw new Error('Телеграм не отдал путь к файлу');
+    const response = await fetch(`https://api.telegram.org/file/bot${bot.token}/${file.file_path}`);
+    if (!response.ok) throw new Error(`Телеграм ответил ${response.status}`);
+    return Buffer.from(await response.arrayBuffer());
+  }
+
   bot.on('message:photo', async (ctx) => {
     remember(ctx);
     const id = userId(ctx);
-    const photos = ctx.message.photo;
-    const photoFileId = photos[photos.length - 1]?.file_id ?? photos[0]?.file_id ?? '';
+    const sizes = ctx.message.photo;
+    const largest = sizes[sizes.length - 1];
+    const photo = { fileId: largest?.file_id ?? '', uniqueId: largest?.file_unique_id ?? '' };
 
     const active = service.activeOf(id);
     if (active.length === 0) {
@@ -473,26 +505,45 @@ export function wire(bot: Bot, service: ChallengeService): void {
       return;
     }
 
-    const reps = parseReps(ctx.message.caption ?? '');
-    if (pending.length === 1) {
-      const challenge = pending[0]!;
-      if (reps === null) {
-        sessions.set(id, { kind: 'report', code: challenge.id, photoFileId });
-        await ctx.reply(
-          `Скриншот принял. Сколько отжиманий засчитываем в «${escapeHtml(challenge.title)}»? Пришли число.`,
-          { parse_mode: 'HTML' },
-        );
+    const status = await ctx.reply('🔍 Читаю скриншот…').catch(() => null);
+    const clearStatus = async (): Promise<void> => {
+      if (!status) return;
+      await ctx.api.deleteMessage(status.chat.id, status.message_id).catch(() => undefined);
+    };
+
+    let reps: number;
+    try {
+      const page = await ocr.read(await downloadPhoto(photo.fileId));
+      const read = readDailyReps(page, service.today(pending[0]!.timezone));
+      if (!read.ok) {
+        await clearStatus();
+        await ctx.reply(`❌ ${FAILURE_HINTS[read.reason]}`, { parse_mode: 'HTML' });
         return;
       }
-      await submitReport(ctx, challenge.id, reps, photoFileId);
+      reps = read.value.reps;
+    } catch (error) {
+      console.error('Не удалось распознать скриншот:', error);
+      await clearStatus();
+      await ctx.reply('Не смог обработать картинку. Пришли скриншот ещё раз — обычным фото, не файлом.');
+      return;
+    }
+    await clearStatus();
+
+    if (pending.length === 1) {
+      await submitReport(ctx, pending[0]!.id, reps, photo);
       return;
     }
 
-    const keyboard = new InlineKeyboard();
+    // Один скриншот — один рабочий день, поэтому его можно засчитать сразу во все борды.
+    pendingReports.set(id, { reps, photoFileId: photo.fileId, photoUniqueId: photo.uniqueId, codes: pending.map((challenge) => challenge.id) });
+    const keyboard = new InlineKeyboard().text(`Во все челленджи (${pending.length})`, 'rep:*').row();
     for (const challenge of pending) {
-      keyboard.text(`${challenge.title} (${challenge.id})`, `rep:${challenge.id}:${reps ?? ''}:${photoFileId}`).row();
+      keyboard.text(`${challenge.title} (${challenge.id})`, `rep:${challenge.id}`).row();
     }
-    await ctx.reply('В какой челлендж засчитать этот отчёт?', { reply_markup: keyboard });
+    await ctx.reply(`Распознал <b>${reps}</b> отжиманий за сегодня. Куда засчитать?`, {
+      parse_mode: 'HTML',
+      reply_markup: keyboard,
+    });
   });
 
   bot.on('callback_query:data', async (ctx) => {
@@ -502,14 +553,18 @@ export function wire(bot: Bot, service: ChallengeService): void {
     await ctx.answerCallbackQuery();
 
     if (data.startsWith('rep:')) {
-      const [, code = '', repsRaw = '', photoFileId = ''] = data.split(':');
-      const reps = repsRaw ? Number(repsRaw) : null;
-      if (reps === null || Number.isNaN(reps)) {
-        sessions.set(id, { kind: 'report', code, photoFileId });
-        await ctx.reply('Сколько отжиманий? Пришли число.');
+      const target = data.slice(4);
+      const report = pendingReports.get(id);
+      if (!report) {
+        await ctx.reply('Этот отчёт уже неактуален — пришли скриншот заново.');
         return;
       }
-      await submitReport(ctx, code, reps, photoFileId);
+      pendingReports.delete(id);
+      const photo = { fileId: report.photoFileId, uniqueId: report.photoUniqueId };
+      const codes = target === '*' ? report.codes : [target];
+      for (const code of codes) {
+        await submitReport(ctx, code, report.reps, photo);
+      }
       return;
     }
     if (data.startsWith('brd:')) {
@@ -541,19 +596,8 @@ export function wire(bot: Bot, service: ChallengeService): void {
     const session = sessions.get(id);
     if (!session) {
       await ctx.reply(
-        'Чтобы отчитаться, пришли скриншот из приложения и число отжиманий в подписи к нему.\nКоманды: /help',
+        'Чтобы отчитаться, пришли скриншот недельного графика из приложения — число за сегодня бот прочитает сам.\nКоманды: /help',
       );
-      return;
-    }
-
-    if (session.kind === 'report') {
-      const reps = parseReps(text);
-      if (reps === null) {
-        await ctx.reply('Нужно число — сколько отжиманий засчитать.');
-        return;
-      }
-      sessions.delete(id);
-      await submitReport(ctx, session.code, reps, session.photoFileId);
       return;
     }
 

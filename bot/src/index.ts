@@ -2,6 +2,7 @@ import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { Bot } from 'grammy';
 import { loadConfig } from './config.ts';
+import { createOcrEngine } from './ocr/engine.ts';
 import { ChallengeService } from './service.ts';
 import { Store } from './storage/store.ts';
 import { wire } from './telegram/bot.ts';
@@ -15,7 +16,8 @@ await store.load();
 
 const service = new ChallengeService(store, { timezone: config.timezone });
 const bot = new Bot(config.token);
-wire(bot, service);
+const ocr = createOcrEngine();
+wire(bot, service, { ocr });
 
 await bot.api.setMyCommands([
   { command: 'new', description: 'бросить вызов' },
@@ -32,7 +34,10 @@ await bot.api.setMyCommands([
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.once(signal, () => {
-    void bot.stop().then(() => service.save());
+    void bot
+      .stop()
+      .then(() => service.save())
+      .then(() => ocr.close());
   });
 }
 
